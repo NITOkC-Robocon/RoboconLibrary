@@ -1,0 +1,17 @@
+{
+    "name": "RoboconLibrary",
+    "version": "1.0.0",
+    "description": "Robocon shared library",
+    "authors": [
+        {
+            "name": "NITOkC-Robocon"
+        }
+    ],
+    "repository":{
+        "type": "git",
+        "url": "https://github.com/NITOkC-Robocon/RoboconLibrary.git"
+    },
+    "frameworks": "stm32cube",
+    "platforms": "*"
+
+}
