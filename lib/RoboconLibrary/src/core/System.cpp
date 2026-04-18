@@ -1,8 +1,4 @@
 #include "core/System.hpp"
-extern "C" {
-    #include "FreeRTOS.h"
-    #include "task.h"
-}
 
 extern "C" void SysTick_Handler(void)
 {

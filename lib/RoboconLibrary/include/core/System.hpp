@@ -4,6 +4,11 @@
 #include <stdbool.h>
 #include "stm32f4xx_hal.h"
 
+extern "C" {
+    #include "FreeRTOS.h"
+    #include "task.h"
+}
+
 // タイマー
 typedef struct {
     uint32_t last;
