@@ -1,24 +1,54 @@
 #include "serial/Serial.hpp"
-#include <cstdio>
+
+/*
+#ifdef USE_FREERTOS
+#include "FreeRTOS.h"
+#include "semphr.h"
+static SemaphoreHandle_t printf_mutex;
+#endif
+*/
 
 
-// ========================================
-// printf用UART
-// ========================================
-static RawSerial* printf_uart = nullptr;
-
-void set_printf_uart(RawSerial* uart) {
-    printf_uart = uart;
-}
+RawSerial* printf_uart = nullptr;
 
 extern "C" int _write(int file, char *ptr, int len)
 {
-    if (printf_uart == nullptr) return 0;
+    if (!printf_uart) return 0;
 
-    for (int i = 0; i < len; i++){
+#ifdef USE_FREERTOS
+    if (xTaskGetSchedulerState() == taskSCHEDULER_RUNNING) {
+        if (printf_mutex) {
+            xSemaphoreTake(printf_mutex, portMAX_DELAY);
+        }
+    }
+#endif
+
+    for (int i = 0; i < len; i++) {
         printf_uart->write(ptr[i]);
     }
+
+#ifdef USE_FREERTOS
+    if (xTaskGetSchedulerState() == taskSCHEDULER_RUNNING) {
+        if (printf_mutex) {
+            xSemaphoreGive(printf_mutex);
+        }
+    }
+#endif
+
     return len;
+}
+
+void Serial_InitPrintf(RawSerial* uart)
+{
+    printf_uart = uart;
+
+#ifdef USE_FREERTOS
+    static bool initialized = false;
+    if (!initialized) {
+        printf_mutex = xSemaphoreCreateMutex();
+        initialized = true;
+    }
+#endif
 }
 
 // ========================================
@@ -163,9 +193,15 @@ RawSerial::RawSerial(PinName tx, PinName rx, uint32_t baudrate) {
 // 送信（割り込み化）
 // ========================================
 void RawSerial::write(uint8_t data) {
+
+    __disable_irq();
+
     uint16_t next = (tx_head + 1) % UART_BUFFER_SIZE;
 
-    while (next == tx_tail); // 簡易ブロック
+    if (next == tx_tail) {
+        __enable_irq();
+        return;
+    }
 
     tx_buffer[tx_head] = data;
     tx_head = next;
@@ -176,8 +212,13 @@ void RawSerial::write(uint8_t data) {
         tx_data = tx_buffer[tx_tail];
         tx_tail = (tx_tail + 1) % UART_BUFFER_SIZE;
 
+        __enable_irq();
+
         HAL_UART_Transmit_IT(&huart, &tx_data, 1);
+        return;
     }
+
+    __enable_irq();
 }
 
 // ========================================
@@ -292,28 +333,3 @@ void RawSerial::enable_uart_clock(USART_TypeDef* uart) {
     if (uart == USART6) __HAL_RCC_USART6_CLK_ENABLE();
 }
 
-// ========================================
-// Serial
-// ========================================
-Serial::Serial(PinName tx, PinName rx, uint32_t baudrate)
-    : RawSerial(tx, rx, baudrate) {}
-
-void Serial::print(const char* str) {
-    while (*str) write(*str++);
-}
-
-void Serial::println(const char* str) {
-    print(str);
-    print("\r\n");
-}
-
-void Serial::print(int num) {
-    char buf[16];
-    sprintf(buf, "%d", num);
-    print(buf);
-}
-
-void Serial::println(int num) {
-    print(num);
-    print("\r\n");
-}

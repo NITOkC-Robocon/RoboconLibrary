@@ -4,11 +4,6 @@
 #include <stdbool.h>
 #include "stm32f4xx_hal.h"
 
-extern "C" {
-    #include "FreeRTOS.h"
-    #include "task.h"
-}
-
 // タイマー
 typedef struct {
     uint32_t last;
@@ -16,7 +11,8 @@ typedef struct {
 } TaskTimer;
 
 void MCU_Init();
+//uint32_t get_time_ms();
+//void wait_ms(uint32_t ms);
 void Error_Handler(void);
-bool sleep_for_ms(TaskTimer *t, uint32_t period);
 
 

@@ -1,4 +1,5 @@
 #pragma once
+
 #define USBTX PA_2
 #define USBRX PA_3
 

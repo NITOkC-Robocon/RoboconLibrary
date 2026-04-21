@@ -1,10 +1,10 @@
 #pragma once
 
-
 #include "core/PinMap.hpp"
 #include "core/System.hpp"
-#include <cstdint>
-#include <stdio.h>
+#include <cstdio>
+
+
 
 // ========================================
 // 設定
@@ -68,19 +68,4 @@ public:
     void push(uint8_t data);
 };
 
-// printfリダイレクト用
-void set_printf_uart(RawSerial* uart);
-
-// ========================================
-// Serial
-// ========================================
-class Serial : public RawSerial {
-public:
-    Serial(PinName tx, PinName rx, uint32_t baudrate = 115200);
-
-    void print(const char* str);
-    void println(const char* str);
-
-    void print(int num);
-    void println(int num);
-};
+void Serial_InitPrintf(RawSerial* uart);
