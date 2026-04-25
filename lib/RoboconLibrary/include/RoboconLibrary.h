@@ -3,8 +3,6 @@
 #include <cmath>
 #include <stdlib.h>
 
-//core
-#include "core/System.hpp"
 
 //Digital
 #include "digital/DigitalIn.hpp"

@@ -1,6 +1,10 @@
 // Clock.hpp
 #pragma once
-#include "stm32f4xx.h"
+
+#include "core/System.hpp"
+extern "C" {
+    #include "stm32f4xx_hal.h"
+}
 
 class Clock {
 public:

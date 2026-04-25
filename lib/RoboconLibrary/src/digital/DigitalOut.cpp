@@ -6,19 +6,20 @@ DigitalOut::DigitalOut(PinName pinName){
 }
 
 void DigitalOut::class_initialized() const{
-    if(!initialized){
-        enableClock(port);
+    if(initialized) return;
 
-        GPIO_InitTypeDef GPIO_InitStruct = {0};
-        GPIO_InitStruct.Pin   = pin;
-        GPIO_InitStruct.Mode  = GPIO_MODE_OUTPUT_PP;
-        GPIO_InitStruct.Pull  = GPIO_NOPULL;
-        GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
+    MCU_Init();
+    enableClock(port);
 
-        HAL_GPIO_Init(port, &GPIO_InitStruct);
+    GPIO_InitTypeDef GPIO_InitStruct = {0};
+    GPIO_InitStruct.Pin   = pin;
+    GPIO_InitStruct.Mode  = GPIO_MODE_OUTPUT_PP;
+    GPIO_InitStruct.Pull  = GPIO_NOPULL;
+    GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
 
-        initialized = true;
-    }
+    HAL_GPIO_Init(port, &GPIO_InitStruct);
+
+    initialized = true;
 };
 
 void DigitalOut::enableClock(GPIO_TypeDef* port_GPIO) const{

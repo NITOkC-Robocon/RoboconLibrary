@@ -2,16 +2,13 @@
 
 #include <cstdio>
 #include "core/PinMap.hpp"
+#include "core/System.hpp"
 extern "C" {
     #include "stm32f4xx_hal.h"
 }
 
 #define UART_BUFFER_SIZE 128
 
-enum IrqType{
-    RxIrq,
-    TxIrq
-};
 
 class RawSerial {
 private:
@@ -37,6 +34,11 @@ protected:
 
 public:
     RawSerial(PinName tx, PinName rx, uint32_t baudrate = 115200);
+
+    enum IrqType{
+        RxIrq,
+        TxIrq
+    };
 
     //割り込み
     using Callback = void(*)();
@@ -73,4 +75,4 @@ public:
     int getc();
 };
 
-void Serial_InitPrintf(RawSerial* uart);
+void Set_OutPut_Printf(RawSerial* uart);

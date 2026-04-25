@@ -47,7 +47,7 @@ void PS3Data(void){
 }
 
 int main(){
-    set_printf_uart(&pc);
+    Set_OutPut_Printf(&pc);
     cont.attach(&PS3Data, RawSerial::RxIrq);
 
     while(1){

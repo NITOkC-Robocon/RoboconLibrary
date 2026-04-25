@@ -1,6 +1,10 @@
 #pragma once
 
+#include "core/System.hpp"
 #include <cstdint>
+extern "C" {
+    #include "stm32f4xx_hal.h"
+}
 
 class Timer {
 private:

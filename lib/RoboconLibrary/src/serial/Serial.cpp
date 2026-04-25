@@ -39,7 +39,7 @@ extern "C" int _write(int file, char *ptr, int len)
 
 void Error_Handler();
 
-void Serial_InitPrintf(RawSerial* uart){
+void Set_OutPut_Printf(RawSerial* uart){
     printf_uart = uart;
 
 #ifdef USE_FREERTOS
@@ -122,6 +122,7 @@ RawSerial::RawSerial(PinName tx, PinName rx, uint32_t baudrate) {
 
 void RawSerial::class_initialized() {
     if(initialized) return;
+    MCU_Init();
 
     enable_gpio_clock(txInfo.port);
     enable_gpio_clock(rxInfo.port);

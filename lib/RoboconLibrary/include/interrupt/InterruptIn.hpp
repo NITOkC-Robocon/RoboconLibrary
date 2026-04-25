@@ -1,6 +1,7 @@
 #pragma once
 
 #include "core/PinMap.hpp"
+#include "core/System.hpp"
 extern "C" {
     #include "stm32f4xx_hal.h"
 }

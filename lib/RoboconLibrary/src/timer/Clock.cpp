@@ -3,15 +3,16 @@
 
 void Clock::init() {
     static bool initialized = false;
-    if (!initialized) {
-        CoreDebug->DEMCR |= CoreDebug_DEMCR_TRCENA_Msk;
-        DWT->CYCCNT = 0;
-        DWT->CTRL |= DWT_CTRL_CYCCNTENA_Msk;
+    if (initialized) return;
+    
+    MCU_Init();
+    CoreDebug->DEMCR |= CoreDebug_DEMCR_TRCENA_Msk;
+    DWT->CYCCNT = 0;
+    DWT->CTRL |= DWT_CTRL_CYCCNTENA_Msk;
 
-        prev = DWT->CYCCNT;
+    prev = DWT->CYCCNT;
 
-        initialized = true;
-    }
+    initialized = true;
 }
 
 uint64_t Clock::timer_accumulated = 0;

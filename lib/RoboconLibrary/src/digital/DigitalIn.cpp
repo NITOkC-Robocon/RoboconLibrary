@@ -6,20 +6,21 @@ DigitalIn::DigitalIn(PinName pinName, PinMode pull){
     pin_pull = PinPull[pull];
 }
 
-void DigitalIn::class_initialized() const
-{
-    if (!initialized) {
-        enableClock(port);
+void DigitalIn::class_initialized() const {
+    if (initialized) return;
+    
+    MCU_Init();
+    enableClock(port);
 
-        GPIO_InitTypeDef GPIO_InitStruct = {};
-        GPIO_InitStruct.Pin  = pin;
-        GPIO_InitStruct.Mode = GPIO_MODE_INPUT;
-        GPIO_InitStruct.Pull = pin_pull;
+    GPIO_InitTypeDef GPIO_InitStruct = {};
+    GPIO_InitStruct.Pin  = pin;
+    GPIO_InitStruct.Mode = GPIO_MODE_INPUT;
+    GPIO_InitStruct.Pull = pin_pull;
 
-        HAL_GPIO_Init(port, &GPIO_InitStruct);
+    HAL_GPIO_Init(port, &GPIO_InitStruct);
 
-        initialized = true;
-    }
+    initialized = true;
+    
 }
 
 void DigitalIn::enableClock(GPIO_TypeDef* port_GPIO) const {

@@ -71,7 +71,9 @@ InterruptIn::InterruptIn(PinName pinName, PinMode pull) {
 void InterruptIn::class_initialized() {
     if (initialized) return;
 
+    MCU_Init();
     init_exti();
+    
     initialized = true;
 }
 

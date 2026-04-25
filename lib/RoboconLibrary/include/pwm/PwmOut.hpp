@@ -1,9 +1,11 @@
 #pragma once
 
-
 #include "core/PinMap.hpp"
 #include "core/System.hpp"
 #include <cstdint>
+extern "C" {
+    #include "stm32f4xx_hal.h"
+}
 
 class PwmOut
 {

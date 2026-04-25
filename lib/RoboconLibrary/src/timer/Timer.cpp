@@ -10,12 +10,13 @@ Timer::Timer() {
 }
 
  void Timer::class_initialized() const {
-    if(!initialized){
-        MCU_Init();
-        Clock::init();
-        Clock::Update();
-        initialized = true;
-    }
+    if(initialized) return;
+
+    MCU_Init();
+    Clock::init();
+    Clock::Update();
+    
+    initialized = true;
 }
 
 void Timer::start() {
