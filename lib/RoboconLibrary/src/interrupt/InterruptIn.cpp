@@ -19,7 +19,7 @@ extern "C" void EXTI1_IRQHandler(void){
 }
 
 extern "C" void EXTI2_IRQHandler(void){
-    HAL_GPIO_EXTI_IRQHandler(GPIO_PIN_3);
+    HAL_GPIO_EXTI_IRQHandler(GPIO_PIN_2);
 }
 
 extern "C" void EXTI3_IRQHandler(void){
@@ -52,22 +52,27 @@ extern "C" void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin) {
 }
 //============================================================
 
-// コンストラクタ
-InterruptIn::InterruptIn(PinName pinName) {
-    MCU_Init();
-
+//コンストラクタ
+InterruptIn::InterruptIn(PinName pinName, PinMode pull) {
     port = PinMap[pinName].port;
     pin = PinMap[pinName].pin;
     pin_number = get_pin_number(PinMap[pinName].pin);
+
+     pull_mode = PinPull[pull];
 
     rise_func = nullptr;
     rise_obj = nullptr;
     fall_func = nullptr;
     fall_obj = nullptr;
 
-    pull_mode = GPIO_NOPULL;
-
     instances[pin_number] = this;
+}
+
+void InterruptIn::class_initialized() {
+    if (initialized) return;
+
+    init_exti();
+    initialized = true;
 }
 
 // EXTI初期化
@@ -84,6 +89,7 @@ void InterruptIn::init_exti() {
     GPIO_InitStruct.Pin = pin;
     GPIO_InitStruct.Mode = GPIO_MODE_IT_RISING_FALLING;
     GPIO_InitStruct.Pull = pull_mode;
+
     HAL_GPIO_Init(port, &GPIO_InitStruct);
 
     // NVIC設定
@@ -109,40 +115,44 @@ void InterruptIn::init_exti() {
 
 //mode設定
 void InterruptIn::mode(PinMode mode){
-    switch(mode){
-        case PullUp:
-            pull_mode = GPIO_PULLUP;
-            break;
-        case PullDown:
-            pull_mode = GPIO_PULLDOWN;
-            break;
-        default:
-            pull_mode = GPIO_NOPULL;
-            break;       
-    }
+    pull_mode = PinPull[mode];
 
-    init_exti();
+    if (initialized) {
+        GPIO_InitTypeDef GPIO_InitStruct = {0};
+        GPIO_InitStruct.Pin  = pin;
+        GPIO_InitStruct.Mode = GPIO_MODE_IT_RISING_FALLING;
+        GPIO_InitStruct.Pull = pull_mode;
+
+        HAL_GPIO_Init(port, &GPIO_InitStruct);
+    }
 }
 
-// rise登録
+// 関数登録(rise時)
 void InterruptIn::rise(void* obj, void (*func)(void*)) {
+    class_initialized();
+
     rise_obj = obj;
     rise_func = func;
 }
 
-// fall登録
+// 関数登録(fall時)
 void InterruptIn::fall(void* obj, void (*func)(void*)) {
+    class_initialized();
+
     fall_obj = obj;
     fall_func = func;
 }
 
-//
-int InterruptIn::read(){
+// 
+int InterruptIn::read() {
+    class_initialized();
     return HAL_GPIO_ReadPin(port, pin) == GPIO_PIN_SET;
 }
 
 // 割り込み処理
 void InterruptIn::handle_interrupt() {
+    class_initialized();
+
     GPIO_PinState state = HAL_GPIO_ReadPin(port, pin);
 
     if (state == GPIO_PIN_SET) {

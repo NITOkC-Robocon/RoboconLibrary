@@ -9,12 +9,15 @@ private:
     GPIO_TypeDef* port;
     uint16_t      pin;
 
-    void enableClock(GPIO_TypeDef* port);  
+    mutable bool initialized = false;
+    void class_initialized() const;
+
+    void enableClock(GPIO_TypeDef* port) const;  
 
 public:
     DigitalOut(PinName pinName);
     void write(uint8_t value);
-    int read();
+    int read() const;
     void toggle();
     void high();
     void low();
@@ -24,7 +27,7 @@ public:
         return *this;
     }
 
-    operator int(){
+    operator int() const {
         return read();
     }
 };

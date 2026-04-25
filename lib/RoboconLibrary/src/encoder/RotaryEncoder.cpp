@@ -5,10 +5,9 @@ static void isr(void* obj){
 } 
 
 RotaryEncoder::RotaryEncoder(PinName PIN_A, PinName PIN_B) : _PIN_A(PIN_A), _PIN_B(PIN_B) {
-    MCU_Init();
     count = 0;
     pos = 0;
-    
+
     _PIN_A.mode(PullUp);
     _PIN_A.rise(this, isr);
     _PIN_A.fall(this, isr);

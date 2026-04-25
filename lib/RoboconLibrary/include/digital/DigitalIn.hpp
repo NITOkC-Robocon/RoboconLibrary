@@ -7,15 +7,20 @@ class DigitalIn{
 private:
     GPIO_TypeDef* port;
     uint16_t      pin;
+    uint32_t pin_pull;
 
-    void enableClock(GPIO_TypeDef* port);
+    mutable bool initialized = false;
+    void class_initialized() const;
+
+    void enableClock(GPIO_TypeDef* port) const;
 
 public:
-    DigitalIn(PinName pinName, uint32_t pull = GPIO_NOPULL);
-    uint8_t read();
+    DigitalIn(PinName pinName, PinMode pull);
+
+    uint8_t read() const;
     void mode(PinMode mode);
 
-    operator int(){
+    operator int() const {
         return read();
     }
 };

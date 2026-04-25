@@ -1,17 +1,21 @@
 #pragma once
 
-#define USBTX PA_2
-#define USBRX PA_3
-
 extern "C" {
     #include "stm32f4xx_hal.h"
 }
 
+#define USBTX PA_2
+#define USBRX PA_3
+
 enum PinMode{
     PullNone,
     PullUp,
-    PullDown
+    PullDown,
+
+    PULL_MAX
 };
+
+extern const uint32_t PinPull[PULL_MAX];
 
 #include <cstdint>
 

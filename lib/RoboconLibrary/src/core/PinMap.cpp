@@ -1,5 +1,7 @@
 #include "core/PinMap.hpp"
 
+extern const uint32_t PinPull[PULL_MAX] = {GPIO_NOPULL, GPIO_PULLUP, GPIO_PULLDOWN};
+
 const PinInfo PinMap[PIN_MAX] = {
 
     // -------- Port A --------

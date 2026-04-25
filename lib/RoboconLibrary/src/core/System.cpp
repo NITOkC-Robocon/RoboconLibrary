@@ -1,4 +1,5 @@
 #include "core/System.hpp"
+#include "timer/Clock.hpp"
 
 /* =========================
    TIMハンドラ（制御用）
@@ -22,22 +23,32 @@ void TIM_Global_Init(void);
 extern "C" void SysTick_Handler(void);
 
 /* =========================
-   初期化関数
+   初期化関数(一度だけ)
 ========================= */
 static bool initialized = false;
 void MCU_Init()
 {
     if (initialized) return;
 
-    HAL_Init();              // HAL初期化（SysTick含む）
+    HAL_Init();     // HAL初期化（SysTick含む）
+
+    __disable_irq();
+
     SystemClock_Config();    // クロック設定
+
     TIM_Global_Init();       // 制御用タイマ初期化
+
+    __enable_irq();
 
     initialized = true;
 }
 
+
+//システムクロックの割り込み呼び出し関数
 extern "C" void SysTick_Handler(void)
 {
+    Clock::Update();
+    
 #ifdef USE_FREERTOS
     xPortSysTickHandler();
 #else
@@ -66,7 +77,7 @@ void TIM_Global_Init()
 
 /* =========================
    クロック設定
-   （HSI 16MHz → 84MHz）
+   （HSE 84MHz）
 ========================= */
 void SystemClock_Config(void)
 {
@@ -75,19 +86,26 @@ void SystemClock_Config(void)
 
     __HAL_RCC_PWR_CLK_ENABLE();
 
+    FLASH->ACR =
+    FLASH_ACR_ICEN |
+    FLASH_ACR_DCEN |
+    FLASH_ACR_PRFTEN |
+    FLASH_ACR_LATENCY_2WS;
+
     /* ---- PLL設定 ---- */
-    RCC_OscInitStruct.OscillatorType = RCC_OSCILLATORTYPE_HSI;
-    RCC_OscInitStruct.HSIState = RCC_HSI_ON;
-    RCC_OscInitStruct.HSICalibrationValue = RCC_HSICALIBRATION_DEFAULT;
+    RCC_OscInitStruct.OscillatorType = RCC_OSCILLATORTYPE_HSE;
+    RCC_OscInitStruct.HSEState = RCC_HSE_ON;
 
     RCC_OscInitStruct.PLL.PLLState = RCC_PLL_ON;
-    RCC_OscInitStruct.PLL.PLLSource = RCC_PLLSOURCE_HSI;
-    RCC_OscInitStruct.PLL.PLLM = 16;
+    RCC_OscInitStruct.PLL.PLLSource = RCC_PLLSOURCE_HSE;
+    RCC_OscInitStruct.PLL.PLLM = 8;
     RCC_OscInitStruct.PLL.PLLN = 336;
     RCC_OscInitStruct.PLL.PLLP = RCC_PLLP_DIV4;
     RCC_OscInitStruct.PLL.PLLQ = 7;
 
     if (HAL_RCC_OscConfig(&RCC_OscInitStruct) != HAL_OK) Error_Handler();
+    while (__HAL_RCC_GET_FLAG(RCC_FLAG_HSERDY) == RESET);
+    while (__HAL_RCC_GET_FLAG(RCC_FLAG_PLLRDY) == RESET);
 
     /* ---- クロック分周 ---- */
     RCC_ClkInitStruct.ClockType =
@@ -100,11 +118,13 @@ void SystemClock_Config(void)
     RCC_ClkInitStruct.AHBCLKDivider = RCC_SYSCLK_DIV1;  // 84MHz
     RCC_ClkInitStruct.APB1CLKDivider = RCC_HCLK_DIV2;    // 42MHz
     RCC_ClkInitStruct.APB2CLKDivider = RCC_HCLK_DIV1;    // 84MHz
-
+    
     if (HAL_RCC_ClockConfig(&RCC_ClkInitStruct, FLASH_LATENCY_2) != HAL_OK) Error_Handler();
 
+    SystemCoreClockUpdate();
+
 #ifndef USE_FREERTOS
-    HAL_SYSTICK_Config(HAL_RCC_GetHCLKFreq() / 1000);
+    HAL_SYSTICK_Config(SystemCoreClock / 1000); //26250は、HCLK=26,250,000であるから（systick=1[kHz]にしたい）
     HAL_SYSTICK_CLKSourceConfig(SYSTICK_CLKSOURCE_HCLK);
     HAL_NVIC_SetPriority(SysTick_IRQn, 0, 0);
 #endif

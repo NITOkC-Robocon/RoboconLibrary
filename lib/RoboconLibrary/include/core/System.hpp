@@ -2,7 +2,9 @@
 
 #include <stdint.h>
 #include <stdbool.h>
-#include "stm32f4xx_hal.h"
+extern "C" {
+    #include "stm32f4xx_hal.h"
+}
 
 // タイマー
 typedef struct {
@@ -10,9 +12,12 @@ typedef struct {
     bool firstCall;
 } TaskTimer;
 
+/**
+ * @brief " マイコンの初期化 "
+ * 
+ * １度しか実行されない
+ */
 void MCU_Init();
-//uint32_t get_time_ms();
-//void wait_ms(uint32_t ms);
 void Error_Handler(void);
 
 

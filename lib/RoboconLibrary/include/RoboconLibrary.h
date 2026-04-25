@@ -19,5 +19,8 @@
 //Serial
 #include "serial/Serial.hpp"
 
+//Timer
+#include "timer/Timer.hpp"
+
 //Encoder
 #include "encoder/RotaryEncoder.hpp"

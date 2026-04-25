@@ -1,7 +1,13 @@
+#pragma once
+
 #ifndef RotaryEncoder_H
 #define RotaryEncoder_H
 
+#include "core/PinMap.hpp"
 #include "interrupt/InterruptIn.hpp"
+extern "C" {
+    #include "stm32f4xx_hal.h"
+}
 
 class RotaryEncoder {
     private:
