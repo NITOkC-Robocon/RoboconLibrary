@@ -22,6 +22,52 @@ static int timerIndex(TIM_TypeDef* tim)
     return -1;
 }
 
+PwmOut::PwmOut(PinName pinName) {
+    info = &PinMap[pinName];
+    port = info->port;
+    pin  = info->pin;
+}
+
+void PwmOut::class_initialized() {
+    if (initialized) return;
+
+    MCU_Init();
+        enableGpioClock(port);
+
+    GPIO_InitTypeDef gpio{};
+    gpio.Pin = pin;
+    gpio.Mode = GPIO_MODE_AF_PP;
+    gpio.Pull = GPIO_NOPULL;
+    gpio.Speed = GPIO_SPEED_FREQ_HIGH;
+    gpio.Alternate = info->af[0];
+
+    HAL_GPIO_Init(port,&gpio);
+
+    for(int i=0;i<info->tim_count;i++)
+    {
+        TIM_TypeDef* candidate = info->tim[i];
+        int tidx = timerIndex(candidate);
+
+        int ch = (info->channel[i] >> 2) - 1;
+
+        if(!channel_used[tidx][ch])
+        {
+            tim = candidate;
+            channel = info->channel[i];
+
+            channel_used[tidx][ch] = true;
+
+            enableTimClock(tim);
+
+            break;
+        }
+    }
+
+    htim.Instance = tim;
+
+    initialized = true;
+}
+
 void PwmOut::enableGpioClock(GPIO_TypeDef* port)
 {
     if(port==GPIOA) __HAL_RCC_GPIOA_CLK_ENABLE();
@@ -65,51 +111,9 @@ uint32_t PwmOut::getTimerClock(TIM_TypeDef* tim)
     else return pclk * 2;
 }
 
-PwmOut::PwmOut(PinName pinName)
-{
-    MCU_Init();
 
-    const PinInfo* info = &PinMap[pinName];
-
-    port = info->port;
-    pin  = info->pin;
-
-    enableGpioClock(port);
-
-    GPIO_InitTypeDef gpio{};
-    gpio.Pin = pin;
-    gpio.Mode = GPIO_MODE_AF_PP;
-    gpio.Pull = GPIO_NOPULL;
-    gpio.Speed = GPIO_SPEED_FREQ_HIGH;
-    gpio.Alternate = info->af[0];
-
-    HAL_GPIO_Init(port,&gpio);
-
-    for(int i=0;i<info->tim_count;i++)
-    {
-        TIM_TypeDef* candidate = info->tim[i];
-        int tidx = timerIndex(candidate);
-
-        int ch = (info->channel[i] >> 2) - 1;
-
-        if(!channel_used[tidx][ch])
-        {
-            tim = candidate;
-            channel = info->channel[i];
-
-            channel_used[tidx][ch] = true;
-
-            enableTimClock(tim);
-
-            break;
-        }
-    }
-
-    htim.Instance = tim;
-}
-
-void PwmOut::period_us(uint32_t us)
-{
+void PwmOut::period_us(uint32_t us){
+    class_initialized();
     period = us;
 
     uint32_t clk = getTimerClock(tim);
@@ -136,27 +140,26 @@ void PwmOut::period_us(uint32_t us)
     HAL_TIM_PWM_Start(&htim,channel);
 }
 
-void PwmOut::period_ms(uint32_t ms)
-{
+void PwmOut::period_ms(uint32_t ms){
     period_us(ms * 1000);
 }
 
 void PwmOut::pulsewidth_ticks(uint32_t ticks){
+    class_initialized();
     __HAL_TIM_SET_COMPARE(&htim, channel, ticks);
 }
 
-void PwmOut::pulsewidth(float sec)
-{
+void PwmOut::pulsewidth(float sec){
     pulsewidth_us(sec * 1000000);
 }
 
-void PwmOut::pulsewidth_us(uint32_t us)
-{
+void PwmOut::pulsewidth_us(uint32_t us){
+    class_initialized();
     __HAL_TIM_SET_COMPARE(&htim, channel, us);
 }
 
-void PwmOut::write(float duty)
-{
+void PwmOut::write(float duty){
+    class_initialized();
     if(duty < 0) duty = 0;
     if(duty > 1) duty = 1;
 
@@ -171,6 +174,7 @@ void PwmOut::write(float duty)
 //=============================
 //======== Servoクラス ========
 //=============================
+
 Servo::Servo(PinName pin) : pwm(pin)
 {
     pwm.period_us(20000);

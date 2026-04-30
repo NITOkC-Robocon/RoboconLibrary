@@ -10,6 +10,7 @@ extern "C" {
 class PwmOut
 {
 private:
+    const PinInfo* info;
 
     GPIO_TypeDef* port;
     uint16_t pin;
@@ -24,9 +25,11 @@ private:
 
     static bool channel_used[14][4];
 
+    mutable bool initialized = false;
+    void class_initialized();
+
     void enableGpioClock(GPIO_TypeDef* port);
     void enableTimClock(TIM_TypeDef* tim);
-
     uint32_t getTimerClock(TIM_TypeDef* tim);
 
 public:
@@ -41,6 +44,7 @@ public:
     void pulsewidth_us(uint32_t us);
     void write(float duty);
 };
+
 
 class Servo 
 {

@@ -33,7 +33,7 @@ public:
  */
     void reset();
 
-    uint64_t elapsed() const;
+    uint64_t read() const;
 /**
  * @brief " 経過時間の取得(マイクロ秒) "
  * 
@@ -42,13 +42,13 @@ public:
  * 約71分でオーバーフローする（uint32_t制限）
  * @return 経過時間 [us]
  */
-    uint32_t elapsed_us() const;
+    uint32_t read_us() const;
 
 /**
  * @brief " 経過時間の取得(ミリ秒) "
  * @return 経過時間 [ms] 
 */
-    uint32_t elapsed_ms() const;
+    uint32_t read_ms() const;
 
 /**
  * @brief " 計測中か否かを判定 ""

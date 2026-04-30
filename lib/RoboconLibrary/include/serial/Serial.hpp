@@ -1,5 +1,6 @@
 #pragma once
 
+#include <cstdarg>
 #include <cstdio>
 #include "core/PinMap.hpp"
 #include "core/System.hpp"
@@ -60,6 +61,8 @@ public:
     volatile bool tx_busy = false;
     uint8_t tx_data;
     uint8_t rx_data;
+
+    int printf(const char* format, ...);
 
     void baud(uint32_t baudrate);
     void attach(Callback cb, IrqType type);

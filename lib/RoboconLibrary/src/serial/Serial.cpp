@@ -10,38 +10,23 @@ static SemaphoreHandle_t printf_mutex;
 
 RawSerial* printf_uart = nullptr;
 
+extern "C" FILE __stdout;
+extern "C" FILE __stdin;
+
 extern "C" int _write(int file, char *ptr, int len)
 {
-    if (!printf_uart) return 0;
+    if (printf_uart == nullptr) return len;
 
-#ifdef USE_FREERTOS
-    if (xTaskGetSchedulerState() == taskSCHEDULER_RUNNING) {
-        if (printf_mutex) {
-            xSemaphoreTake(printf_mutex, portMAX_DELAY);
-        }
+    for (int i=0; i<len; i++){
+        printf_uart->putc(ptr[i]);
     }
-#endif
-
-    for (int i = 0; i < len; i++) {
-        printf_uart->write(ptr[i]);
-    }
-
-#ifdef USE_FREERTOS
-    if (xTaskGetSchedulerState() == taskSCHEDULER_RUNNING) {
-        if (printf_mutex) {
-            xSemaphoreGive(printf_mutex);
-        }
-    }
-#endif
-
     return len;
 }
-
-void Error_Handler();
 
 void Set_OutPut_Printf(RawSerial* uart){
     printf_uart = uart;
 
+    setvbuf(stdout, NULL, _IONBF, 0);
 #ifdef USE_FREERTOS
     static bool initialized = false;
     if (!initialized) {
@@ -50,6 +35,8 @@ void Set_OutPut_Printf(RawSerial* uart){
     }
 #endif
 }
+
+void Error_Handler();
 
 static RawSerial* uart_instances[6] = {0};
 
@@ -274,7 +261,35 @@ void RawSerial::attach(Callback cb, IrqType type){
 }
 
 
+
 //送受信用メソッド
+int RawSerial::printf(const char* format, ...)
+{
+    class_initialized();
+
+    char buffer[256];
+
+    va_list args;
+    va_start(args, format);
+
+    int len = vsnprintf(buffer, sizeof(buffer), format, args);
+
+    va_end(args);
+
+    if (len < 0) {
+        return len;
+    }
+
+    if (len >= static_cast<int>(sizeof(buffer))) {
+        len = sizeof(buffer) - 1;
+    }
+
+    for (int i = 0; i < len; ++i) {
+        putc(buffer[i]);
+    }
+
+    return len;
+}
 
 bool RawSerial::writeable() {
     class_initialized();
@@ -331,7 +346,7 @@ uint8_t RawSerial::read() {
 }
 
 int RawSerial::putc(int c) {
-    write(static_cast<uint8_t>(c));
+    write((uint8_t)c);
     return c;
 }
 

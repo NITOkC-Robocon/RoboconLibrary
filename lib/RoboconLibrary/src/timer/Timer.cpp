@@ -49,7 +49,7 @@ void Timer::reset() {
     }   
 }
 
-uint64_t Timer::elapsed() const {
+uint64_t Timer::read() const {
     class_initialized();
 
     if (!running) {
@@ -58,16 +58,16 @@ uint64_t Timer::elapsed() const {
     return Clock::now() - start_time;
 }
 
-uint32_t Timer::elapsed_us() const {
+uint32_t Timer::read_us() const {
     class_initialized();
 
-    return elapsed() / (SystemCoreClock / 1000000);
+    return read() / (SystemCoreClock / 1000000);
 }
 
-uint32_t Timer::elapsed_ms() const {
+uint32_t Timer::read_ms() const {
     class_initialized();
 
-    return (elapsed() / (SystemCoreClock / 1000000)) / 1000;
+    return (read() / (SystemCoreClock / 1000000)) / 1000;
 }
 
 bool Timer::isRunning() const {
