@@ -7,7 +7,7 @@
 左スティックで移動を指示
 
                 前
-    2-----------------------3
+    1-----------------------0
     |                       |
     |                       |
     |                       |
@@ -15,7 +15,7 @@
     |                       |
     |                       |
     |                       |
-    1-----------------------0
+    2-----------------------3
                 後ろ
 
 モータ番号：
@@ -29,12 +29,12 @@
 #include <RoboconLibrary.h>
 
 // PCとシリアル通信 (デバッグ用)
-RawSerial pc(USBTX, USBRX, 9600);
+RawSerial pc(USBTX, USBRX);
 // PS3コントローラからデータを受信するシリアル
 RawSerial cont(PC_12, PD_2, 2400);
 
 // モータの回転方向制御用のデジタル出力
-DigitalOut Dig[4] = {PB_8, PC_0, PA_7, PC_5};
+DigitalOut Dig[4] = {PB_8, PC_0,  PA_7, PC_5};
 // モータの速度制御用のPWM出力
 PwmOut P[4] = {PC_9, PA_9, PB_6, PC_7};
 
@@ -49,9 +49,9 @@ double target_motor[4];
 double current_motor[4];
 
 
-const double acceleration = 0.03;   // 加速率（値を小さくするとゆっくり加速する）
+const double acceleration = 0.20;   // 加速率（値を小さくするとゆっくり加速する）
 const double max_speed = 0.8;       //最大速度
-const double default_speed = 8/1.5;   //通常速度
+const double default_speed = 0.8/1.5;   //通常速度
 
 void Config(void);
 void Move(void);
@@ -182,13 +182,13 @@ void Move(void) {
 
         // 各モータへの割り振り
         // 右後
-        target_motor[0] = (x + y);
+        target_motor[0] = (-x + y);
         // 左後
-        target_motor[1] = (x - y);
+        target_motor[1] = (-x - y);
         // 左前
-        target_motor[2] = (-x - y);
+        target_motor[2] = (x - y);
         // 右前
-        target_motor[3] = (-x + y);
+        target_motor[3] = (x + y);
     }
 
 
@@ -248,9 +248,9 @@ void Move(void) {
     }
 
     // デバッグ出力（必要なら）
-    /*
-    pc.printf("Joystick X: %.2f, Y: %.2f\n", x, y);
-    pc.printf("Target Motors: %.2f %.2f %.2f %.2f\n", target_motor[0], target_motor[1], target_motor[2], target_motor[3]);
-    pc.printf("Current Motors: %.2f %.2f %.2f %.2f\n", current_motor[0], current_motor[1], current_motor[2], current_motor[3]);
-    */
+    
+    //pc.printf("Joystick X: %.2f, Y: %.2f\n", x, y);
+    //pc.printf("Target Motors: %.2f %.2f %.2f %.2f\n", target_motor[0], target_motor[1], target_motor[2], target_motor[3]);
+    //pc.printf("Current Motors: %.2f %.2f %.2f %.2f\n", current_motor[0], current_motor[1], current_motor[2], current_motor[3]);
+    
 }
