@@ -1,11 +1,13 @@
 #pragma once
 
+#include <cstdint>
 extern "C" {
     #include "stm32f4xx_hal.h"
 }
 
 #define USBTX PA_2
 #define USBRX PA_3
+
 
 enum PinMode{
     PullNone,
@@ -17,7 +19,6 @@ enum PinMode{
 
 extern const uint32_t PinPull[PULL_MAX];
 
-#include <cstdint>
 
 // -----------------------------------
 // ピン名の列挙
@@ -39,25 +40,44 @@ enum PinName {
     PIN_MAX
 };
 
-// -----------------------------------
-// ピン情報構造体
-// -----------------------------------
+
+//----- TIM 情報 -----
+constexpr uint8_t MAX_TIM_PER_PIN = 4;
+struct TIMInfo {
+    TIM_TypeDef* tim;
+    uint32_t channel;
+    uint32_t af;
+};
+
+//----- UART 情報 -----
+enum UART_MODE {
+    TX,
+    RX,
+    BOTH,
+    NONE
+};
+
+constexpr uint8_t MAX_UART_PER_PIN = 2;
+struct UARTInfo {
+    USART_TypeDef* uart;
+    uint32_t uart_af;
+    UART_MODE uart_mode; 
+};
+
+//----- ピン情報まとめ -----
 struct PinInfo {
     const char* name;
     GPIO_TypeDef* port;
     uint16_t pin;
 
     // --- TIM ---
-    TIM_TypeDef* tim[2];
-    uint32_t channel[2];
-    uint32_t af[2];
-    uint8_t tim_count;
+    TIMInfo tim_info[MAX_TIM_PER_PIN];
 
     //--- UART ---
-    USART_TypeDef* uart[2];
-    uint32_t uart_af[2];
-    uint8_t uart_count;
+    UARTInfo uart_info[MAX_UART_PER_PIN];
 };
+
 
 // PinMap 配列の宣言
 extern const PinInfo PinMap[PIN_MAX];
+

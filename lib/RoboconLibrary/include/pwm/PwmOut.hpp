@@ -15,15 +15,15 @@ private:
     GPIO_TypeDef* port;
     uint16_t pin;
 
-    TIM_TypeDef* tim;
-    uint32_t channel;
+    TIM_TypeDef* tim = nullptr;
+    uint32_t channel = 0;
 
 
-    uint32_t period;
+    uint32_t period = 0;
 
-    uint32_t arr;
+    uint32_t arr = 0;
 
-    static bool channel_used[14][4];
+    static bool channel_used[12][4];
 
     mutable bool initialized = false;
     void class_initialized();

@@ -83,14 +83,21 @@ RawSerial::RawSerial(PinName tx, PinName rx, uint32_t baudrate) {
     rxInfo = PinMap[rx];
     baudrate_keep = baudrate;
 
-    for (int i = 0; i < txInfo.uart_count; i++) {
-        for (int j = 0; j < rxInfo.uart_count; j++) {
-            if (txInfo.uart[i] == rxInfo.uart[j]) {
-                uart = txInfo.uart[i];
-                tx_af = txInfo.uart_af[i];
-                rx_af = rxInfo.uart_af[j];
+    for (int i = 0; i < MAX_UART_PER_PIN; i++) {
+        if(txInfo.uart_info[i].uart_mode != TX) continue;
+
+        for (int j = 0; j < MAX_UART_PER_PIN; j++) {
+            if(rxInfo.uart_info[j].uart_mode != RX) continue;
+
+            if (txInfo.uart_info[i].uart == rxInfo.uart_info[j].uart) {
+                uart = txInfo.uart_info[i].uart;
+                tx_af = txInfo.uart_info[i].uart_af;
+                rx_af = rxInfo.uart_info[j].uart_af;
+
+                break;
             }
         }
+        if(uart != nullptr) break;
     }
 
     if (uart == nullptr) Error_Handler();

@@ -1,20 +1,19 @@
 #include "pwm/PwmOut.hpp"
 #include "serial/Serial.hpp"
 
-static TIM_TypeDef* timers[14] =
+static TIM_TypeDef* timers[12] =
 {
     TIM1,TIM2,TIM3,TIM4,TIM5,
-    TIM6,TIM7,
     TIM8,
     TIM9,TIM10,TIM11,
     TIM12,TIM13,TIM14
 };
 
-bool PwmOut::channel_used[14][4] = {0};
+bool PwmOut::channel_used[12][4] = {0};
 
 static int timerIndex(TIM_TypeDef* tim)
 {
-    for(int i=0;i<14;i++)
+    for(int i=0;i<12;i++)
     {
         if(timers[i]==tim) return i;
     }
@@ -32,31 +31,42 @@ void PwmOut::class_initialized() {
     if (initialized) return;
 
     MCU_Init();
-        enableGpioClock(port);
+
+    enableGpioClock(port);
 
     GPIO_InitTypeDef gpio{};
     gpio.Pin = pin;
     gpio.Mode = GPIO_MODE_AF_PP;
     gpio.Pull = GPIO_NOPULL;
     gpio.Speed = GPIO_SPEED_FREQ_HIGH;
-    gpio.Alternate = info->af[0];
 
-    HAL_GPIO_Init(port,&gpio);
-
-    for(int i=0;i<info->tim_count;i++)
+    for(int i=0; i<MAX_TIM_PER_PIN; i++)
     {
-        TIM_TypeDef* candidate = info->tim[i];
-        int tidx = timerIndex(candidate);
+        TIM_TypeDef* candidate = info->tim_info[i].tim;
+        if(candidate == nullptr) break;
 
-        int ch = (info->channel[i] >> 2) - 1;
+        int tidx = timerIndex(candidate);
+        if(tidx < 0) continue;
+
+        int ch = -1;
+        switch(info->tim_info[i].channel)
+        {
+            case TIM_CHANNEL_1: ch = 0; break;
+            case TIM_CHANNEL_2: ch = 1; break;
+            case TIM_CHANNEL_3: ch = 2; break;
+            case TIM_CHANNEL_4: ch = 3; break;
+        }
+        if(ch < 0) continue;
 
         if(!channel_used[tidx][ch])
         {
             tim = candidate;
-            channel = info->channel[i];
+            channel = info->tim_info[i].channel;
 
             channel_used[tidx][ch] = true;
 
+            gpio.Alternate = info->tim_info[i].af;
+            HAL_GPIO_Init(port,&gpio);
             enableTimClock(tim);
 
             break;
@@ -64,6 +74,11 @@ void PwmOut::class_initialized() {
     }
 
     htim.Instance = tim;
+    if(tim == nullptr)
+    {
+        Error_Handler();
+        return;
+    }
 
     initialized = true;
 }
@@ -114,6 +129,8 @@ uint32_t PwmOut::getTimerClock(TIM_TypeDef* tim)
 
 void PwmOut::period_us(uint32_t us){
     class_initialized();
+
+    if(us == 0) return;
     period = us;
 
     uint32_t clk = getTimerClock(tim);
