@@ -5,20 +5,20 @@
 
 
 //Digital
-#include "digital/DigitalIn.hpp"
-#include "digital/DigitalOut.hpp"
+#include "driver/digital/DigitalIn.hpp"
+#include "driver/digital/DigitalOut.hpp"
 
 //Pwm
-#include "pwm/PwmOut.hpp"
+#include "driver/pwm/PwmOut.hpp"
 
 //Interrupt
-#include "interrupt/InterruptIn.hpp"
+#include "driver/interrupt/InterruptIn.hpp"
 
 //Serial
-#include "serial/Serial.hpp"
+#include "driver/serial/Serial.hpp"
 
 //Timer
-#include "timer/Timer.hpp"
+#include "driver/timer/Timer.hpp"
 
 //Encoder
-#include "encoder/RotaryEncoder.hpp"
+#include "driver/encoder/RotaryEncoder.hpp"
