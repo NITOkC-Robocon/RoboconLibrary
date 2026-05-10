@@ -103,4 +103,29 @@ void Error_Handler(void)
     }
 }
 
+//--------------------------------------
+//IRQnの定義（上の初期化とは別）
+
+IRQn_Type getExtiIRQ(uint8_t pin_number)
+{
+    switch(pin_number)
+    {
+        case 0: return EXTI0_IRQn;
+        case 1: return EXTI1_IRQn;
+        case 2: return EXTI2_IRQn;
+        case 3: return EXTI3_IRQn;
+        case 4: return EXTI4_IRQn;
+
+        case 5:
+        case 6:
+        case 7:
+        case 8:
+        case 9:
+            return EXTI9_5_IRQn;
+
+        default:
+            return EXTI15_10_IRQn;
+    }
+}
+
 #endif
