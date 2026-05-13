@@ -8,18 +8,19 @@
 
 
 class RotaryEncoder {
+        friend void isr(void* obj);
     private:
         InterruptIn _PIN_A;
         InterruptIn _PIN_B;
         int count;
         unsigned char pos;
         
-    public:
-        // pinset
-        RotaryEncoder(PinName PIN_A, PinName PIN_B);
         // count
         void Proccessing(void);
-        // Set the count value to 0
+    public:
+        RotaryEncoder(PinName PIN_A, PinName PIN_B);
+        
+        // Set the count value to 0 
         void Reset(void);
         // return a count
         int Get_Count(void);

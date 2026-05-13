@@ -1,46 +1,159 @@
+# RoboconLibrary
 
-This directory is intended for project specific (private) libraries.
-PlatformIO will compile them to static libraries and link into the executable file.
+A lightweight STM32Cube-based mbed-like library for PlatformIO.
 
-The source code of each library should be placed in a separate directory
-("lib/your_library_name/[Code]").
+RoboconLibrary is designed for long-term embedded development after Mbed OS end-of-life, providing a familiar mbed-style API while using STM32Cube HAL as backend.
 
-For example, see the structure of the following example libraries `Foo` and `Bar`:
+---
 
-|--lib
-|  |
-|  |--Bar
-|  |  |--docs
-|  |  |--examples
-|  |  |--src
-|  |     |- Bar.c
-|  |     |- Bar.h
-|  |  |- library.json (optional. for custom build options, etc) https://docs.platformio.org/page/librarymanager/config.html
-|  |
-|  |--Foo
-|  |  |- Foo.c
-|  |  |- Foo.h
-|  |
-|  |- README --> THIS FILE
-|
-|- platformio.ini
-|--src
-   |- main.c
+## Features
 
-Example contents of `src/main.c` using Foo and Bar:
+- mbed-like API design
+- STM32Cube HAL backend
+- PlatformIO support
+- Lightweight and simple abstraction
+- Designed for Robocon development
+- Multi-target STM32 support
+
+---
+
+## Supported Targets
+
+Currently tested on:
+
+- STM32F303K8
+- STM32F446RE
+
+Planned support:
+
+- Other STM32 MCUs
+
+---
+
+## Installation
+
+Add this library to your `platformio.ini`.
+
+```ini
+lib_deps =
+    https://github.com/NITOkC-Robocon/RoboconLibrary.git
 ```
-#include <Foo.h>
-#include <Bar.h>
 
-int main (void)
+---
+
+## Available Modules
+
+### DigitalOut
+Control digital output pins.
+
+Methods:
+- write()
+- read()
+- toggle()
+- high()
+- low()
+
+---
+
+### DigitalIn
+Control digital input pins.
+
+Methods:
+- read()
+- mode()
+
+---
+
+### Timer
+Measure elapsed time.
+
+Methods:
+- start()
+- stop()
+- reset()
+- read()
+- read_ms()
+- read_us()
+- isRunning()
+
+---
+
+### PwmOut
+Generate PWM signals.
+
+Methods:
+- write()
+- read()
+- period_ms()
+- period_us()
+- pulsewidth_tick()
+- pulsewidth()
+- pulsewidth_us()
+
+### Servo
+Generate servo control signals.
+
+Methods:
+- period_ms()
+- period_us()
+- setPulseRange()
+- pulsewidth_us()
+
+---
+
+### RawSerial
+Low-level blocking UART interface for direct serial communication.
+
+Typical use cases:
+- Debug output
+- Sensor communication
+- Simple command interface
+
+Methods:
+- baud()
+- attach()
+- putc()
+- getc()
+- readable()
+- writeable()
+- printf()
+- write()
+- read()
+
+### InterruptIn
+Interrupt-driven digital input.
+
+Methods:
+- mode()
+- rise()
+- fall()
+- read()
+
+---
+
+### RotaryEncoder
+Interrupt-driven rotary encoder interface.
+
+Methods:
+- Get_Count()
+- Reset()
+- Get_Circumference()
+
+## Design Philosophy
+To preserve existing Robocon code assets and maintain the ease of learning provided by the familiar mbed-style API after the end-of-life of Mbed OS.
+
+
+````markdown
+## Basic Example
+
+```cpp
+#include <RoboconLibrary.h>
+
+DigitalOut led(LED1);
+
+int main()
 {
-  ...
+    while (1) {
+        led.toggle();
+    }
 }
-
-```
-
-The PlatformIO Library Dependency Finder will find automatically dependent
-libraries by scanning project source files.
-
-More information about PlatformIO Library Dependency Finder
-- https://docs.platformio.org/page/librarymanager/ldf.html

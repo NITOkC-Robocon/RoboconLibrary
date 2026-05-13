@@ -153,7 +153,7 @@ void Servo::period_us(uint32_t us)
 
 void Servo::period_ms(uint32_t ms)
 {
-    pwm.period_us(ms * 1000);
+    pwm.period_ms(ms);
 }
 
 void Servo::setPulseRange(uint32_t min, uint32_t max)

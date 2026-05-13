@@ -11,6 +11,8 @@ extern "C" {
 #define USBTX PA_2
 #define USBRX PA_3
 
+#define LED PA_5
+
 
 enum PinMode{
     PullNone,
