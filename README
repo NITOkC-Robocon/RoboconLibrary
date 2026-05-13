@@ -1,12 +1,14 @@
 # RoboconLibrary
 
 A lightweight STM32Cube-based mbed-like library for PlatformIO.
+（PlatfomIO向け、STM32Cubeベースのmbed風ライブラリ。）
 
 RoboconLibrary is designed for long-term embedded development after Mbed OS end-of-life, providing a familiar mbed-style API while using STM32Cube HAL as backend.
+（RoboconLibraryは、Mbed OSのサポート終了後も長期的な組み込み開発を継続できるよう設計されており、バックエンドとしてSTM32Cube HALを使用しながら、使い慣れたmbedスタイルのAPIを提供する。）
 
 ---
 
-## Features
+## Features（特徴）
 
 - mbed-like API design
 - STM32Cube HAL backend
@@ -17,22 +19,19 @@ RoboconLibrary is designed for long-term embedded development after Mbed OS end-
 
 ---
 
-## Supported Targets
+## Supported Targets（サポート対象）
 
 Currently tested on:
 
 - STM32F303K8
 - STM32F446RE
 
-Planned support:
-
-- Other STM32 MCUs
-
 ---
 
-## Installation
+## Installation（インストール）
 
 Add this library to your `platformio.ini`.
+（[env:xx]毎に以下のコードを platformio.ini に書き込むこと）
 
 ```ini
 lib_deps =
@@ -41,113 +40,296 @@ lib_deps =
 
 ---
 
-## Available Modules
+## Library Structure（ライブラリ構造）
+Note:
+Timer is a software-based elapsed time measurement API.
+（Timer＝ソフトウェアベースの経過時間計測API）
+
+TIM_core is an internal hardware abstraction layer that manages STM32 TIM peripherals.
+（TIM_core＝STM32のTIM周辺機器を管理する内部ハードウェア抽象化レイヤー）
+It is used by PWM generation and hardware-based timing features.
+（PWM生成機能やハードウェアベースのタイミング機能で使用される）
+
+PinMap defines logical pin names and maps them to MCU-specific GPIO pins.
+（PinMapは論理ピン名を定義し、それらをMCU固有のGPIOピンにマッピングします。）
+Details are described in PinMap documentation.
+（詳細はPinMapのドキュメントに記載されています。）
+
+RoboconLibrary/
+|
+├── examples/
+|   ├── encoder_test/
+|   |   ├── encoder_test.cpp
+|   |   └── README.md
+|   |
+|   ├── led_toggle/
+|   |   ├── led_toggle.cpp
+|   |   └── README.md
+|   |
+|   ├── MCU_com/
+|   |   ├── mcu_1.cpp
+|   |   ├── mcu_2.cpp
+|   |   └── README.md
+|   |
+|   ├── omni/
+|   |   ├── omni.cpp
+|   |   └── README.md
+|   |
+|   ├── PS3_com/
+|   |   ├── PS3_com.cpp
+|   |   └── README.md
+|   |
+|   └── pwm_test/
+|       ├── pwm_test.cpp
+|       └── README.md
+|   
+├── include/
+|   ├── core/
+|   |   ├── PinMap.hpp
+|   |   ├── System.hpp
+|   |   ├── TIM_core.hpp
+|   |   └── UART_core.hpp
+|   |
+|   ├── driver/
+|   |   ├── digital/
+|   |   |   ├── DigitalIn.hpp
+|   |   |   └── DigitalOut.hpp
+|   |   |
+|   |   ├── encoder/
+|   |   |   └── RotaryEncoder.hpp
+|   |   |
+|   |   ├── interrupt/
+|   |   |   └── InterruptIn.hpp
+|   |   |
+|   |   ├── pwm/
+|   |   |   └── PwmOut.hpp
+|   |   |
+|   |   ├── serial/
+|   |   |   └── RawSerial.hpp
+|   |   |
+|   |   └── timer/
+|   |       ├── Clock.hpp
+|   |       └── Timer.hpp
+|   |
+|   ├── targets/
+|   |   ├── stm32f303k8/
+|   |   |   ├── PinMap.hpp
+|   |   |   ├── TIM_core.hpp
+|   |   |   └── UART_core.hpp
+|   |   |
+|   |   └── stm32f446re/
+|   |       ├── PinMap.hpp
+|   |       ├── TIM_core.hpp
+|   |       └── UART_core.hpp
+|   |    
+|   └── RoboconLibrary.h
+|
+├── src/
+|   ├── driver/
+|   |   ├── digital/
+|   |   |   ├── DigitalIn.cpp
+|   |   |   └── DigitalOut.cpp
+|   |   |
+|   |   ├── encoder/
+|   |   |   └── RotaryEncoder.cpp
+|   |   |
+|   |   ├── interrupt/
+|   |   |   └── InterruptIn.cpp
+|   |   |
+|   |   ├── pwm/
+|   |   |   └── PwmOut.cpp
+|   |   |
+|   |   ├── serial/
+|   |   |   └── RawSerial.cpp
+|   |   |
+|   |   └── timer/
+|   |       ├── Clock.cpp
+|   |       └── Timer.cpp
+|   |
+|   └── targets/
+|       ├── stm32f303k8/
+|       |   ├── PinMap.cpp
+|       |   ├── TIM_core.cpp
+|       |   └── UART_core.cpp
+|       |
+|       └── stm32f446re/
+|           ├── PinMap.cpp
+|           ├── TIM_core.cpp
+|           └── UART_core.cpp
+|
+├── .gitignore
+|
+├── Library.json
+|
+├── LICENSE
+|
+└── platformio.ini
+
+
+---
+
+## Available Modules（利用可能なモジュール）
 
 ### DigitalOut
 Control digital output pins.
 
-Methods:
-- write()
-- read()
-- toggle()
-- high()
-- low()
+Typical use cases（利用例）:
+- Control LED
+- Motor rotation direction control （モーターの回転方向制御）
+
+Methods（メソッド）:
+- write(value) : Set output level (0 or 1)（出力値を設定）
+- read() : Get current output state（出力値を取得）
+- toggle() : Invert current output state（電流出力状態を反転）
+- high() : Set output HIGH（出力をHigh状態にする）
+- low() : Set output LOW（出力をlow状態にする）
 
 ---
 
 ### DigitalIn
 Control digital input pins.
 
-Methods:
-- read()
-- mode()
+Typical use cases（利用例）:
+- Limit switch input detection（リミットスイッチの入力検知）
+
+Methods（メソッド）:
+- read() : Get current input state（入力値を取得）
+- mode(pull) : Set input pin pull configuration (PULLUP / PULLDOWN / PULLNONE)（入力ピンの内部プル抵抗の有効化状態を設定）
 
 ---
 
 ### Timer
-Measure elapsed time.
+Measure elapsed time.（経過時間を計測）
 
-Methods:
-- start()
-- stop()
-- reset()
-- read()
-- read_ms()
-- read_us()
-- isRunning()
+Typical use cases（利用例）:
+- Time control in PID control（PID制御における時間制御）
+- Motor RPM measurement（モーターのrpm計測）
+
+Methods（メソッド）:
+- start() : Start counting time（計測開始）
+- stop() : Stop counting（計測停止）
+- reset() : Reset counter to zero（計測値をリセット）
+- read() : Get elapsed time in seconds（経過時間を取得：単位[sec]）
+- read_ms() : Get elapsed time in milliseconds（経過時間を取得：単位[ms]）
+- read_us() : Get elapsed time in microseconds（経過時間を取得：単位[us]）
+- isRunning() : Check if timer is running（計測状態を取得）
 
 ---
 
 ### PwmOut
-Generate PWM signals.
+Generate PWM signals.（PWM信号を生成）
 
-Methods:
-- write()
-- read()
-- period_ms()
-- period_us()
-- pulsewidth_tick()
-- pulsewidth()
-- pulsewidth_us()
+Typical use cases（利用例）:
+- Control motor （モーター制御）
+
+Methods（メソッド）:
+- write(duty) : Set duty cycle (0.0 to 1.0)（出力をduty比0.0～1.0で設定）
+- read() : Get current duty cycle（出力値を取得）
+- period_ms(ms) : Set PWM period in milliseconds（PWM周期を設定：単位[ms]）
+- period_us(us) : Set PWM period in microseconds（PWM周期を設定：単位[us]）
+- pulsewidth() : Get current pulse width in seconds（現在のパルス幅を取得）
+- pulsewidth_us(us) : Set pulse width in microseconds（パルス幅を設定：単位[us]）
+- pulsewidth_tick(ticks) : Set pulse width in timer ticks（パルス幅を設定：単位[ticks]）
+
+---
 
 ### Servo
-Generate servo control signals.
+Generate servo control signals.（サーボ制御信号の生成）
 
-Methods:
-- period_ms()
-- period_us()
-- setPulseRange()
-- pulsewidth_us()
+Typical use cases（利用例）:
+- Servo motor position control（サーボモーターの位置制御）
+- Actuator angle control in robotics（ロボットにおけるアクチュエータの角度制御）
+
+Methods（メソッド）:
+- period_ms(ms) : Set servo PWM period in milliseconds（PWM周期の設定：単位[ms]）
+- period_us(us) : Set servo PWM period in microseconds（PWM周期の設定：単位[us]）
+- setPulseRange(min, max) : Define pulse width range for angle mapping（パルス幅の限界値を設定：単位[us]）
+- pulsewidth_us(us) : Directly set servo pulse width in microseconds（パルス幅を設定：単位[us]）
 
 ---
 
 ### RawSerial
 Low-level blocking UART interface for direct serial communication.
+（直接シリアル通信用の低レベルブロッキングUARTインターフェース。）
 
-Typical use cases:
+Typical use cases（利用例）:
 - Debug output
 - Sensor communication
 - Simple command interface
 
-Methods:
-- baud()
-- attach()
-- putc()
-- getc()
-- readable()
-- writeable()
-- printf()
-- write()
-- read()
+Methods（メソッド）:
+- baud(rate) : Set UART baud rate（ボーレート設定）
+- attach(callback) : Attach interrupt callback for RX events（RXにおける割り込み時に実行する関数の設定）
+- putc(c) : Send one character（一文字送る）
+- getc() : Receive one character (blocking)（一文字受け取る）
+- readable() : Check if data is available to read（データを読み込めるかを判定）
+- writeable() : Check if transmit buffer is available（データを送れるかを判定）
+- printf(fmt, ...) : Formatted output (like stdio printf)（文字や数字の出力）
+- write(data, size) : Send multiple bytes（複数バイト送信）
+- read(data, size) : Receive multiple bytes (blocking)（複数バイト受信）
 
 ### InterruptIn
-Interrupt-driven digital input.
+Interrupt-driven digital input.（割り込み駆動型デジタル入力）
+
+Typical use cases:
+- Receive sensor signal 
 
 Methods:
-- mode()
-- rise()
-- fall()
-- read()
+- mode(mode) : Configure input pin (pull-up / pull-down / floating)
+- rise(callback) : Set callback on rising edge signal（割り込み関数の設定：立ち上がり時）
+- fall(callback) : Set callback on falling edge signal（割り込み関数の設定：立ち下り時）
+- read() : Read current pin state（ピンの状態判定）
 
 ---
 
 ### RotaryEncoder
 Interrupt-driven rotary encoder interface.
 
+Typical use cases:
+- Read rotary encoder pulse counts
+
 Methods:
-- Get_Count()
-- Reset()
-- Get_Circumference()
+- Get_Count() : Get current encoder pulse count（エンコーダーのカウント数を取得）
+- Reset() : Reset count to zero（カウントをリセット）
+- Get_Circumference(Diameter,　Resolution) : Convert pulse count into linear travel distance using wheel diameter and encoder resolution（ホイール径と分解能からパルス数を直線移動距離に変換）
 
-## Design Philosophy
-To preserve existing Robocon code assets and maintain the ease of learning provided by the familiar mbed-style API after the end-of-life of Mbed OS.
+---
 
 
-````markdown
-## Basic Example
+## Design Philosophy（設計思想）
+This library is designed to preserve existing Robocon code assets and maintain the ease of learning provided by the familiar mbed-style API after the end-of-life of Mbed OS.
+
+It follows the following principles:
+
+- Keep a familiar mbed-like API to reduce migration cost
+- Separate user API layer from hardware abstraction layer (HAL-based backend)
+- Minimize dependency complexity to ensure lightweight integration in PlatformIO projects
+- Provide consistent behavior across multiple STM32 targets
+- Emphasize transparency in control without overly concealing the hardware's behavior.
+
+＜日本語訳＞
+このライブラリは、既存のRoboconコード資産を維持し、mbed OSのサポート終了後も、使い慣れたmbedスタイルのAPIによる学習の容易さを維持することを目的としています。
+
+以下の原則に基づいています。
+
+- 移行コストを削減するために、使い慣れたmbedライクなAPIを維持する
+- ユーザーAPI層とハードウェア抽象化層（HALベースのバックエンド）を分離する
+- PlatformIOプロジェクトへの軽量な統合を可能にするため、依存関係の複雑さを最小限に抑える
+- 複数のSTM32ターゲット間で一貫した動作を提供する
+- ハードウェアの挙動を隠しすぎず、ユーザーが制御の仕組みを推測できるレベルの透明性を維持する
+
+
+## Basic Example（基礎例）
+All modules are included via `RoboconLibrary.h` (umbrella header).
+（すべてのモジュールは RoboconLibrary.h に導入されています。）
+Direct module includes are not required.
+（直接モジュールを導入する必要はありません。）
+
+This design ensures simplicity and consistency across all supported STM32 targets.
+（この設計により、サポートされているすべてのSTM32ターゲットにおいて、シンプルさと一貫性が確保されます。）
 
 ```cpp
-#include <RoboconLibrary.h>
+#include <RoboconLibrary.h> 
 
 DigitalOut led(LED1);
 
@@ -157,3 +339,4 @@ int main()
         led.toggle();
     }
 }
+```
