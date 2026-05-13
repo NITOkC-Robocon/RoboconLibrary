@@ -268,6 +268,8 @@ Methods（メソッド）:
 - write(data, size) : Send multiple bytes（複数バイト送信）
 - read(data, size) : Receive multiple bytes (blocking)（複数バイト受信）
 
+---
+
 ### InterruptIn
 Interrupt-driven digital input.（割り込み駆動型デジタル入力）
 
