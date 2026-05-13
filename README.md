@@ -55,6 +55,7 @@ PinMap defines logical pin names and maps them to MCU-specific GPIO pins.
 Details are described in PinMap documentation.
 （詳細はPinMapのドキュメントに記載されています。）
 
+```text
 RoboconLibrary/
 |
 ├── examples/
@@ -164,6 +165,7 @@ RoboconLibrary/
 ├── LICENSE
 |
 └── platformio.ini
+```
 
 
 ---
