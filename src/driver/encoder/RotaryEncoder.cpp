@@ -1,6 +1,6 @@
 #include "driver/encoder/RotaryEncoder.hpp"
 
-static void isr(void* obj){
+void isr(void* obj){
     static_cast<RotaryEncoder*>(obj)->Proccessing();
 } 
 
