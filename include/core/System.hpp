@@ -11,6 +11,7 @@ extern "C" {
 }
 
 constexpr uint32_t GPIO_SPEED_MAX = GPIO_SPEED_FREQ_VERY_HIGH;
+
 #elif defined(STM32F303x8) 
 extern "C" {
     #include "stm32f3xx_hal.h"
@@ -36,3 +37,4 @@ void MCU_Init();
 void Error_Handler(void);
 
 IRQn_Type getExtiIRQ(uint8_t pin_number);
+

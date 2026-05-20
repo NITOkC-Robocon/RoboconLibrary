@@ -103,9 +103,12 @@ void Error_Handler(void)
     }
 }
 
-//--------------------------------------
-//IRQnの定義（上の初期化とは別）
 
+//============================================
+//MCU別、ハードウェア依存コード
+//============================================
+
+//InterruptIn用IRQ
 IRQn_Type getExtiIRQ(uint8_t pin_number)
 {
     switch(pin_number)
