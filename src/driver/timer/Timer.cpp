@@ -1,6 +1,4 @@
 #include "driver/timer/Timer.hpp"
-#include "driver/timer/Clock.hpp"   // DWTラッパー想定
-#include "core/System.hpp"
 
 
 Timer::Timer() {
