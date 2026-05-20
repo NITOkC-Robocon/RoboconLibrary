@@ -20,5 +20,12 @@
 //Timer
 #include "driver/timer/Timer.hpp"
 
+//Ticker
+#include "driver/timer/Ticker.hpp"
+
+//Timeout
+#include "driver/timer/Timeout.hpp"
+
 //Encoder
 #include "driver/encoder/RotaryEncoder.hpp"
+
