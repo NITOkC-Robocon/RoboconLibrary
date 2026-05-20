@@ -2,6 +2,7 @@
 #pragma once
 
 #include "core/System.hpp"
+#include "core/TIM_Init.hpp"
 
 
 class Clock {
@@ -36,4 +37,21 @@ public:
 private:
     static uint64_t timer_accumulated;
     static uint32_t prev;
+};
+
+
+
+class TIM_Clock {
+public:
+    static void init();
+
+    static void start();
+
+    static uint32_t get_counter();
+
+    static TIM_HandleTypeDef& handle();
+
+private:
+    static TIM_TypeDef* instance;
+    static TIM_HandleTypeDef htim;
 };

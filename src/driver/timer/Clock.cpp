@@ -1,4 +1,3 @@
-// Clock.cpp
 #include "driver/timer/Clock.hpp"
 
 void Clock::init() {
@@ -36,4 +35,61 @@ uint64_t Clock::now()
 
     __set_PRIMASK(primask);
     return t;
+}
+
+
+//割り込み用TIMクロック
+
+TIM_TypeDef* TIM_Clock::instance = nullptr;
+TIM_HandleTypeDef TIM_Clock::htim{};
+
+TIM_HandleTypeDef& TIM_Clock::handle(){
+    return htim;
+}
+
+void TIM_Clock::init()
+{
+    static bool initialized = false;
+    if (initialized) return;
+
+    MCU_Init();
+
+    instance = TIM_instance;
+
+    enableTimClock(instance);
+
+    uint32_t prescaler = (getTimerClock(instance) / 1000000) - 1;
+
+    htim.Instance = instance;
+
+    htim.Init.Prescaler = (uint16_t)prescaler;
+    htim.Init.CounterMode = TIM_COUNTERMODE_UP;
+    htim.Init.Period = getTIMMaxCount(instance);
+    htim.Init.AutoReloadPreload = TIM_AUTORELOAD_PRELOAD_DISABLE;
+
+    HAL_TIM_OC_Init(&htim);
+
+    TIM_OC_InitTypeDef sConfig = {};
+    sConfig.OCMode = TIM_OCMODE_TIMING;
+    sConfig.Pulse = 0;
+
+    HAL_TIM_OC_ConfigChannel(&htim, &sConfig, TIM_CHANNEL_1);
+
+    HAL_NVIC_SetPriority(getTIMUpdateIRQn(instance), 1, 0);
+    HAL_NVIC_EnableIRQ(getTIMUpdateIRQn(instance));
+
+    initialized = true;
+}
+
+void TIM_Clock::start()
+{
+    init();
+    HAL_TIM_Base_Start(&htim);
+    HAL_TIM_OC_Start(&htim, TIM_CHANNEL_1);
+}
+
+uint32_t TIM_Clock::get_counter()
+{
+    init();
+    return __HAL_TIM_GET_COUNTER(&htim);
 }
