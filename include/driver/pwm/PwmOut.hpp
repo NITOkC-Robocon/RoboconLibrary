@@ -2,6 +2,7 @@
 
 #include "core/PinMap.hpp"
 #include "core/System.hpp"
+#include "core/TIM_Init.hpp"
 #include "core/TIM_Manager.hpp"
 
 #include <cstdint>
@@ -17,7 +18,6 @@ private:
 
     TIM_TypeDef* tim = nullptr;
     uint32_t channel = 0;
-
 
     uint32_t period = 0;
 
