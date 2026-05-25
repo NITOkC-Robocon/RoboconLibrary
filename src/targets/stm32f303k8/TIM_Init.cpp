@@ -1,6 +1,30 @@
 #include "core/TIM_Manager.hpp"
+#include "driver/timer/TIM_EventScheduler.hpp"
 
 #if defined(STM32F303x8)
+
+//割り込みハンドラの定義
+
+extern "C" void TIM1_UP_TIM16_IRQHandler(){
+
+}
+extern "C" void TIM2_IRQHandler(){
+
+}
+extern "C" void TIM3_IRQHandler(){
+
+}
+extern "C" void TIM1_BRK_TIM15_IRQHandler(){
+
+}
+extern "C" void TIM1_UP_TIM16_IRQHandler(){
+
+}
+extern "C" void TIM1_TRG_COM_TIM17_IRQHandler(){
+    TIM_Clock_IRQHandler();
+}
+
+
 
 void enableTimClock(TIM_TypeDef* tim)
 {
