@@ -36,5 +36,6 @@ typedef struct {
 void MCU_Init();
 void Error_Handler(void);
 
+void enableGpioClock(GPIO_TypeDef* port);
 IRQn_Type getExtiIRQ(uint8_t pin_number);
 

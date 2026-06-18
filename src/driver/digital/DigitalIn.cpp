@@ -10,7 +10,7 @@ void DigitalIn::class_initialized() const {
     if (initialized) return;
     
     MCU_Init();
-    enableClock(port);
+    enableGpioClock(port);
 
     GPIO_InitTypeDef GPIO_InitStruct = {};
     GPIO_InitStruct.Pin  = pin;
@@ -21,13 +21,6 @@ void DigitalIn::class_initialized() const {
 
     initialized = true;
     
-}
-
-void DigitalIn::enableClock(GPIO_TypeDef* port_GPIO) const {
-    if(port_GPIO == GPIOA) __HAL_RCC_GPIOA_CLK_ENABLE();
-    if(port_GPIO == GPIOB) __HAL_RCC_GPIOB_CLK_ENABLE();
-    if(port_GPIO == GPIOC) __HAL_RCC_GPIOC_CLK_ENABLE();
-    if(port_GPIO == GPIOD) __HAL_RCC_GPIOD_CLK_ENABLE();
 }
 
 uint8_t DigitalIn::read() const {

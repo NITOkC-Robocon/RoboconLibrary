@@ -13,8 +13,6 @@ private:
     mutable bool initialized = false;
     void class_initialized() const;
 
-    void enableClock(GPIO_TypeDef* port) const;
-
 public:
     DigitalIn(PinName pinName, PinMode pull);
 

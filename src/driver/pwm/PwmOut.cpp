@@ -65,15 +65,6 @@ void PwmOut::class_initialized() {
     initialized = true;
 }
 
-void PwmOut::enableGpioClock(GPIO_TypeDef* port)
-{
-    if(port==GPIOA) __HAL_RCC_GPIOA_CLK_ENABLE();
-    if(port==GPIOB) __HAL_RCC_GPIOB_CLK_ENABLE();
-    if(port==GPIOC) __HAL_RCC_GPIOC_CLK_ENABLE();
-    if(port==GPIOD) __HAL_RCC_GPIOD_CLK_ENABLE();
-}
-
-
 void PwmOut::period_us(uint32_t us){
     class_initialized();
 

@@ -81,11 +81,7 @@ void InterruptIn::class_initialized() {
 void InterruptIn::init_exti() {
     GPIO_InitTypeDef GPIO_InitStruct = {0};
 
-    // GPIOクロック有効化
-    if (port == GPIOA) __HAL_RCC_GPIOA_CLK_ENABLE();
-    if (port == GPIOB) __HAL_RCC_GPIOB_CLK_ENABLE();
-    if (port == GPIOC) __HAL_RCC_GPIOC_CLK_ENABLE();
-    if (port == GPIOD) __HAL_RCC_GPIOD_CLK_ENABLE();
+    enableGpioClock(port);
 
     // GPIO設定
     GPIO_InitStruct.Pin = pin;

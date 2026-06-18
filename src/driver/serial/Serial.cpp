@@ -114,8 +114,8 @@ void RawSerial::class_initialized() {
     if(initialized) return;
     MCU_Init();
 
-    enable_gpio_clock(txInfo.port);
-    enable_gpio_clock(rxInfo.port);
+    enableGpioClock(txInfo.port);
+    enableGpioClock(rxInfo.port);
 
     GPIO_InitTypeDef GPIO_InitStruct = {};
     GPIO_InitStruct.Mode = GPIO_MODE_AF_PP;
@@ -153,13 +153,6 @@ void RawSerial::class_initialized() {
     start_interrupt();
 
     initialized = true;
-}
-
-void RawSerial::enable_gpio_clock(GPIO_TypeDef* port) {
-    if (port == GPIOA) __HAL_RCC_GPIOA_CLK_ENABLE();
-    if (port == GPIOB) __HAL_RCC_GPIOB_CLK_ENABLE();
-    if (port == GPIOC) __HAL_RCC_GPIOC_CLK_ENABLE();
-    if (port == GPIOD) __HAL_RCC_GPIOD_CLK_ENABLE();
 }
 
 void RawSerial::start_interrupt() {

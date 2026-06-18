@@ -25,7 +25,6 @@ private:
     mutable bool initialized = false;
     void class_initialized();
 
-    void enable_gpio_clock(GPIO_TypeDef* port);
     void start_interrupt();
 
 protected:

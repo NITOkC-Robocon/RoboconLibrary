@@ -103,6 +103,15 @@ void Error_Handler(void)
 //============================================
 //MCU別、ハードウェア依存コード
 //============================================
+//GPIOクロック有効化
+void enableGpioClock(GPIO_TypeDef* port)
+{
+    if(port == GPIOA) __HAL_RCC_GPIOA_CLK_ENABLE();
+    else if(port == GPIOB) __HAL_RCC_GPIOB_CLK_ENABLE();
+    else if(port == GPIOC) __HAL_RCC_GPIOC_CLK_ENABLE();
+    else if(port == GPIOD) __HAL_RCC_GPIOD_CLK_ENABLE();
+    else if(port == GPIOF) __HAL_RCC_GPIOF_CLK_ENABLE();
+}
 
 //InterruptIn用IRQ
 

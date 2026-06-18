@@ -28,8 +28,6 @@ private:
     mutable bool initialized = false;
     void class_initialized();
 
-    void enableGpioClock(GPIO_TypeDef* port);
-
 public:
     PwmOut(PinName pinName);
 

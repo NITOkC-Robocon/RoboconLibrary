@@ -11,9 +11,7 @@ private:
     uint16_t      pin;
 
     mutable bool initialized = false;
-    void class_initialized() const;
-
-    void enableClock(GPIO_TypeDef* port) const;  
+    void class_initialized() const; 
 
 public:
     DigitalOut(PinName pinName);
