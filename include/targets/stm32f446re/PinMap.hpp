@@ -46,6 +46,18 @@ enum PinName {
 };
 
 
+//----- Analog 情報 -----
+constexpr uint8_t MAX_ADC_PER_PIN = 3;
+struct ADCInfo {
+    ADC_TypeDef* adc;
+    uint32_t channel;
+};
+
+struct DACInfo {
+    DAC_TypeDef* dac;
+    uint32_t channel;
+};
+
 //----- TIM 情報 -----
 constexpr uint8_t MAX_TIM_PER_PIN = 4;
 struct TIMInfo {
@@ -74,6 +86,10 @@ struct PinInfo {
     const char* name;
     GPIO_TypeDef* port;
     uint16_t pin;
+
+    // --- ADC/DAC ---
+    ADCInfo adc_info[MAX_ADC_PER_PIN];
+    DACInfo dac_info;
 
     // --- TIM ---
     TIMInfo tim_info[MAX_TIM_PER_PIN];
