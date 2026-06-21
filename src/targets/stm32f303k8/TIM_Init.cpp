@@ -3,6 +3,8 @@
 
 #if defined(STM32F303x8)
 
+bool check_Handle = false;
+
 //割り込みハンドラの定義
 
 extern "C" void TIM1_UP_TIM16_IRQHandler(){
@@ -17,11 +19,11 @@ extern "C" void TIM3_IRQHandler(){
 extern "C" void TIM1_BRK_TIM15_IRQHandler(){
 
 }
-extern "C" void TIM1_UP_TIM16_IRQHandler(){
-
-}
 extern "C" void TIM1_TRG_COM_TIM17_IRQHandler(){
     TIM_Clock_IRQHandler();
+
+    if(!check_Handle) check_Handle = true;
+    else check_Handle = false;
 }
 
 
@@ -50,7 +52,7 @@ uint32_t getTimerClock(TIM_TypeDef* tim)
     uint32_t pclk;
     uint32_t ppre;
 
-    if(isAPBTIM(tim)){
+    if(isAPB2TIM(tim)){
         pclk = HAL_RCC_GetPCLK2Freq();
         ppre = (RCC->CFGR & RCC_CFGR_PPRE2) >> 13;
     }
