@@ -3,8 +3,6 @@
 
 #if defined(STM32F303x8)
 
-bool check_Handle = false;
-
 //割り込みハンドラの定義
 
 extern "C" void TIM1_UP_TIM16_IRQHandler(){
@@ -21,9 +19,6 @@ extern "C" void TIM1_BRK_TIM15_IRQHandler(){
 }
 extern "C" void TIM1_TRG_COM_TIM17_IRQHandler(){
     TIM_Clock_IRQHandler();
-
-    if(!check_Handle) check_Handle = true;
-    else check_Handle = false;
 }
 
 
