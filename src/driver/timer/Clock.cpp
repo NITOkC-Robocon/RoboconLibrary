@@ -86,10 +86,30 @@ void TIM_Clock::start()
     init();
     HAL_TIM_Base_Start(&htim);
     HAL_TIM_OC_Start(&htim, TIM_CHANNEL_1);
+
+    __HAL_TIM_ENABLE_IT(&htim, TIM_IT_UPDATE);
 }
 
+
+uint32_t TIM_Clock::overflow_count = 0;
 uint32_t TIM_Clock::get_counter()
 {
-    init();
-    return __HAL_TIM_GET_COUNTER(&htim);
+    if(getTIMMaxCount(instance) == UINT32_MAX)
+    {
+        return __HAL_TIM_GET_COUNTER(&htim);
+    }
+
+    uint32_t high1;
+    uint32_t high2;
+    uint16_t low;
+
+    do
+    {
+        high1 = overflow_count;
+        low   = __HAL_TIM_GET_COUNTER(&htim);
+        high2 = overflow_count;
+    }
+    while(high1 != high2);
+
+    return (high1 << 16) | low;
 }

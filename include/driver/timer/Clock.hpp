@@ -43,6 +43,8 @@ private:
 
 class TIM_Clock {
 public:
+    static uint32_t overflow_count;
+
     static void init();
 
     static void start();

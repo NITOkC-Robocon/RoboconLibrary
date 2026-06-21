@@ -1,6 +1,7 @@
 #include "driver/timer/TIM_EventScheduler.hpp"
 #include "driver/timer/Clock.hpp"
 
+
 TIM_Event* TIM_EventScheduler::events[MAX_EVENTS] = {};
 uint8_t TIM_EventScheduler::count = 0;
 
@@ -107,6 +108,16 @@ void TIM_EventScheduler::schedule_next()
 
 void TIM_Clock_IRQHandler()
 {
+    if(__HAL_TIM_GET_FLAG(&TIM_Clock::handle(), TIM_FLAG_UPDATE))
+    {
+        if(__HAL_TIM_GET_IT_SOURCE(&TIM_Clock::handle(), TIM_IT_UPDATE))
+        {
+            __HAL_TIM_CLEAR_IT(&TIM_Clock::handle(), TIM_IT_UPDATE);
+
+            TIM_Clock::overflow_count++;
+        }
+    }
+
     if(__HAL_TIM_GET_FLAG(&TIM_Clock::handle(), TIM_FLAG_CC1))
     {
         if(__HAL_TIM_GET_IT_SOURCE(&TIM_Clock::handle(), TIM_IT_CC1))
