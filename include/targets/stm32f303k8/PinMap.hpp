@@ -7,7 +7,7 @@ extern "C" {
 
 
 #define USBTX PA_2
-#define USBRX PA_3
+#define USBRX PA_15
 
 #define LED PB_3
 
@@ -27,7 +27,7 @@ extern const uint32_t PinPull[PULL_MAX];
 // -----------------------------------
 enum PinName {
     // Port A
-    PA_0, PA_1, PA_2, PA_3, PA_4, PA_5, PA_6, PA_7, PA_8, PA_9, PA_10, PA_11, PA_12,
+    PA_0, PA_1, PA_2, PA_3, PA_4, PA_5, PA_6, PA_7, PA_8, PA_9, PA_10, PA_11, PA_12, PA_15,
 
     // Port B (PB2除外)
     PB_0, PB_1, PB_3, PB_4, PB_5, PB_6, PB_7,
@@ -39,6 +39,18 @@ enum PinName {
     PIN_MAX
 };
 
+
+//----- Analog 情報 -----
+constexpr uint8_t MAX_ADC_PER_PIN = 3;
+struct ADCInfo {
+    ADC_TypeDef* adc;
+    uint32_t channel;
+};
+
+struct DACInfo {
+    DAC_TypeDef* dac;
+    uint32_t channel;
+};
 
 //----- TIM 情報 -----
 constexpr uint8_t MAX_TIM_PER_PIN = 3;
@@ -68,6 +80,10 @@ struct PinInfo {
     const char* name;
     GPIO_TypeDef* port;
     uint16_t pin;
+
+    // --- ADC/DAC ---
+    ADCInfo adc_info[MAX_ADC_PER_PIN];
+    DACInfo dac_info;
 
     // --- TIM ---
     TIMInfo tim_info[MAX_TIM_PER_PIN];
