@@ -26,6 +26,10 @@
 //Timeout
 #include "driver/timer/Timeout.hpp"
 
+//Analog
+#include "driver/analog/AnalogIn.hpp"
+#include "driver/analog/AnalogOut.hpp"
+
 //Encoder
 #include "driver/encoder/RotaryEncoder.hpp"
 
