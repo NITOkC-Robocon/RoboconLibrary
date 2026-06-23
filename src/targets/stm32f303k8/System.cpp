@@ -39,33 +39,37 @@ extern "C" void SysTick_Handler(void)
 
 /* =========================
    クロック設定
-   （HSE 72MHz）
+   （HSE 72MHz / フォールバック HSI*9 = ~72MHz）
 ========================= */
-
 void SystemClock_Config(void)
 {
     RCC_OscInitTypeDef RCC_OscInitStruct = {};
     RCC_ClkInitTypeDef RCC_ClkInitStruct = {};
 
-    // HSE ON
+    // Try HSE first
     RCC_OscInitStruct.OscillatorType = RCC_OSCILLATORTYPE_HSE;
-    RCC_OscInitStruct.HSEState = RCC_HSE_ON;
-
-    // PLL
+    RCC_OscInitStruct.HSEState = RCC_HSE_BYPASS;
+    RCC_OscInitStruct.HSIState = RCC_HSI_OFF;
     RCC_OscInitStruct.PLL.PLLState = RCC_PLL_ON;
     RCC_OscInitStruct.PLL.PLLSource = RCC_PLLSOURCE_HSE;
-
-    // 8MHz * 9 = 72MHz
     RCC_OscInitStruct.PLL.PLLMUL = RCC_PLL_MUL9;
-
-    // HSE divide
     RCC_OscInitStruct.HSEPredivValue = RCC_HSE_PREDIV_DIV1;
 
     if (HAL_RCC_OscConfig(&RCC_OscInitStruct) != HAL_OK) {
-        Error_Handler();
+        // HSE failed; fallback to HSI + PLL
+        RCC_OscInitStruct.OscillatorType = RCC_OSCILLATORTYPE_HSI;
+        RCC_OscInitStruct.HSIState = RCC_HSI_ON;
+        RCC_OscInitStruct.HSICalibrationValue = RCC_HSICALIBRATION_DEFAULT;
+        RCC_OscInitStruct.PLL.PLLState = RCC_PLL_ON;
+        RCC_OscInitStruct.PLL.PLLSource = RCC_PLLSOURCE_HSI;
+        RCC_OscInitStruct.PLL.PLLMUL = RCC_PLL_MUL9;
+
+        if (HAL_RCC_OscConfig(&RCC_OscInitStruct) != HAL_OK) {
+            Error_Handler();
+        }
     }
 
-    // Clock select
+    // Select PLL as system clock and configure dividers
     RCC_ClkInitStruct.ClockType =
         RCC_CLOCKTYPE_SYSCLK |
         RCC_CLOCKTYPE_HCLK |
@@ -73,7 +77,6 @@ void SystemClock_Config(void)
         RCC_CLOCKTYPE_PCLK2;
 
     RCC_ClkInitStruct.SYSCLKSource = RCC_SYSCLKSOURCE_PLLCLK;
-
     RCC_ClkInitStruct.AHBCLKDivider = RCC_SYSCLK_DIV1;
     RCC_ClkInitStruct.APB1CLKDivider = RCC_HCLK_DIV2;
     RCC_ClkInitStruct.APB2CLKDivider = RCC_HCLK_DIV1;
@@ -91,18 +94,32 @@ void SystemClock_Config(void)
 #endif
 }
 
-
-
+/* =========================
+   エラーハンドラ
+========================= */
 void Error_Handler(void)
 {
     while (1)
     {
+        /* Trap here for debugger */
     }
 }
+
+/* =========================
+    便利関数
+========================= */
+
+void wait_ms(int ms)
+{
+    MCU_Init();
+    HAL_Delay(ms);
+}
+
 
 //============================================
 //MCU別、ハードウェア依存コード
 //============================================
+
 //GPIOクロック有効化
 void enableGpioClock(GPIO_TypeDef* port)
 {
@@ -114,7 +131,6 @@ void enableGpioClock(GPIO_TypeDef* port)
 }
 
 //InterruptIn用IRQ
-
 IRQn_Type getExtiIRQ(uint8_t pin_number)
 {
     switch(pin_number)
