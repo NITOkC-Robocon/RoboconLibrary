@@ -1,5 +1,7 @@
 #include "driver/digital/DigitalOut.hpp"
 
+#include "core/System.hpp"
+
 DigitalOut::DigitalOut(PinName pinName){
     port = PinMap[pinName].port;
     pin = PinMap[pinName].pin;

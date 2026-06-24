@@ -1,4 +1,5 @@
 #include "driver/timer/Timeout.hpp"
+
 #include "driver/timer/Clock.hpp"
 
 void Timeout::attach_ms(Callback cb, uint32_t period_ms)

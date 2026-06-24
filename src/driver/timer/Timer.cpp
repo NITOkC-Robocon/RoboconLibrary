@@ -1,5 +1,6 @@
 #include "driver/timer/Timer.hpp"
 
+#include "driver/timer/Clock.hpp"
 
 Timer::Timer() {
     start_time = 0;

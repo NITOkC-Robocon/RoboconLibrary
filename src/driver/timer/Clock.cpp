@@ -1,5 +1,7 @@
 #include "driver/timer/Clock.hpp"
 
+#include "core/TIM_Init.hpp"
+
 void Clock::init() {
     static bool initialized = false;
     if (initialized) return;

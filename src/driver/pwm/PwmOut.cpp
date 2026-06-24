@@ -1,5 +1,9 @@
 #include "driver/pwm/PwmOut.hpp"
 
+#include "core/System.hpp"
+#include "core/TIM_Init.hpp"
+
+#include <cstdint>
 
 bool PwmOut::channel_used[TIMER_COUNT][4] = {0};
 

@@ -1,5 +1,7 @@
 #include "driver/interrupt/InterruptIn.hpp"
 
+#include "core/System.hpp"
+
 // staticメンバ初期化
 InterruptIn* InterruptIn::instances[16] = {0};
 

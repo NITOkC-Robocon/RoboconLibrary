@@ -1,5 +1,7 @@
 #include "driver/analog/AnalogIn.hpp"
 
+#include "core/System.hpp"
+
 
 AnalogIn::AnalogIn(PinName pin)
 {

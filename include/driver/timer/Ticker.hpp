@@ -1,5 +1,6 @@
 #pragma once
 
+#include "core/System.hpp"
 #include "TIM_Events.hpp"
 #include "TIM_EventScheduler.hpp"
 

@@ -1,6 +1,5 @@
 #pragma once
 
-#include "core/System.hpp"
 #include "core/PinMap.hpp"
 #include "core/ADC_DAC_Init.hpp"
 

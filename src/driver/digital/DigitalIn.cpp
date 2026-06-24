@@ -1,5 +1,7 @@
 #include "driver/digital/DigitalIn.hpp"
 
+#include "core/System.hpp"
+
 DigitalIn::DigitalIn(PinName pinName, PinMode pull){
     port = PinMap[pinName].port;
     pin  = PinMap[pinName].pin;

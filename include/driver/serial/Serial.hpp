@@ -2,9 +2,8 @@
 
 #include <cstdarg>
 #include <cstdio>
+
 #include "core/PinMap.hpp"
-#include "core/System.hpp"
-#include "core/UART_Manager.hpp"
 
 
 #define UART_BUFFER_SIZE 128

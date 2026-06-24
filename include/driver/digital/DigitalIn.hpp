@@ -1,7 +1,6 @@
 #pragma once
 
 #include "core/PinMap.hpp"
-#include "core/System.hpp"
 
 
 class DigitalIn{

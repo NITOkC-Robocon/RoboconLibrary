@@ -1,5 +1,6 @@
 #include "driver/analog/AnalogOut.hpp"
 
+#include "core/System.hpp"
 
 uint16_t check_prev_value;
 uint32_t check_value;
@@ -15,6 +16,8 @@ AnalogOut::AnalogOut(PinName pin)
 
     check_instance = dac_instance;
     check_channel = channel;
+
+    set_buffer_extence();
 }
 
 void AnalogOut::init()
@@ -63,7 +66,7 @@ void AnalogOut::init()
     DAC_ChannelConfTypeDef sConfig{};
 
     sConfig.DAC_Trigger = DAC_TRIGGER_NONE;
-    sConfig.DAC_OutputBuffer = DAC_OUTPUTBUFFER_DISABLE;
+    sConfig.DAC_OutputBuffer = DAC_OUTPUTBUFFER_EXISTENCE;
 
     if(HAL_DAC_ConfigChannel(hdac, &sConfig, channel) != HAL_OK)
     {
@@ -84,8 +87,6 @@ void AnalogOut::set_buffer_extence(bool buffer)
     
     if(buffer)  DAC_OUTPUTBUFFER_EXISTENCE = DAC_OUTPUTBUFFER_ENABLE;
     else DAC_OUTPUTBUFFER_EXISTENCE = DAC_OUTPUTBUFFER_DISABLE;
-
-    init();
 }
 
 void AnalogOut::write(float value)

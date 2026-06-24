@@ -1,5 +1,8 @@
 #include "driver/serial/Serial.hpp"
 
+#include "core/System.hpp"
+#include "core/UART_Manager.hpp"
+
 /*
 #ifdef USE_FREERTOS
 #include "FreeRTOS.h"
