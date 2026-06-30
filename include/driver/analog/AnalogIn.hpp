@@ -16,7 +16,7 @@ private:
     void init();
 
 public:
-    explicit AnalogIn(PinName pin);
+    AnalogIn(PinName pin);
 
     uint16_t read_u16();
 

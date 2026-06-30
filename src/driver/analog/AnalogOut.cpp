@@ -2,10 +2,6 @@
 
 #include "core/System.hpp"
 
-uint16_t check_prev_value;
-uint32_t check_value;
-DAC_TypeDef* check_instance;
-uint32_t check_channel;
 
 AnalogOut::AnalogOut(PinName pin)
 {
@@ -13,9 +9,6 @@ AnalogOut::AnalogOut(PinName pin)
 
     dac_instance = PinMap[pinname].dac_info.dac;
     channel      = PinMap[pinname].dac_info.channel;
-
-    check_instance = dac_instance;
-    check_channel = channel;
 
     set_buffer_extence();
 }
@@ -73,6 +66,21 @@ void AnalogOut::init()
         while(1);
     }
 
+    if (channel == DAC_CHANNEL_1) {
+        if (this->DAC_OUTPUTBUFFER_EXISTENCE == DAC_OUTPUTBUFFER_DISABLE) {
+            dac_instance->CR |= (1UL << 1);   // 無効(DISABLE)なら、BOOFF1を 1 にする
+        } else {
+            dac_instance->CR &= ~(1UL << 1);  // 有効(ENABLE)なら、BOOFF1を 0 にクリアする
+        }
+    } 
+    else if (channel == DAC_CHANNEL_2) {
+        if (this->DAC_OUTPUTBUFFER_EXISTENCE == DAC_OUTPUTBUFFER_DISABLE) {
+            dac_instance->CR |= (1UL << 17);  // 無効(DISABLE)なら、BOOFF2を 1 にする
+        } else {
+            dac_instance->CR &= ~(1UL << 17); // 有効(ENABLE)なら、BOOFF2を 0 にクリアする
+        }
+    }
+
     if(HAL_DAC_Start(hdac, channel) != HAL_OK)
     {
         while(1);
@@ -105,11 +113,7 @@ void AnalogOut::write_u16(uint16_t value)
 {
     init();
 
-    check_prev_value = value;
-
     uint32_t dac_value = value >> 4;
-
-    check_value = dac_value;
 
     if(HAL_DAC_SetValue(
             hdac,
