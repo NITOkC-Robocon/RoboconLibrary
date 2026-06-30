@@ -59,6 +59,11 @@ Details are described in PinMap documentation.
 RoboconLibrary/
 |
 ├── examples/
+|   ├── Analog/
+|   |   ├── mcu_1.cpp
+|   |   ├── mcu_2.cpp
+|   |   └── README.md
+|   |
 |   ├── encoder_test/
 |   |   ├── encoder_test.cpp
 |   |   └── README.md
@@ -86,12 +91,18 @@ RoboconLibrary/
 |   
 ├── include/
 |   ├── core/
+|   |   ├── ADC_DAC_Init.hpp
 |   |   ├── PinMap.hpp
 |   |   ├── System.hpp
-|   |   ├── TIM_core.hpp
-|   |   └── UART_core.hpp
+|   |   ├── TIM_Init.hpp
+|   |   ├── TIM_Manager.hpp
+|   |   └── UART_Manager.hpp
 |   |
 |   ├── driver/
+|   |   ├── Analog/
+|   |   |   ├── AnalogIn.hpp
+|   |   |   └── AnalogOut.hpp
+|   |   |
 |   |   ├── digital/
 |   |   |   ├── DigitalIn.hpp
 |   |   |   └── DigitalOut.hpp
@@ -110,23 +121,27 @@ RoboconLibrary/
 |   |   |
 |   |   └── timer/
 |   |       ├── Clock.hpp
+|   |       ├── Ticker.hpp
+|   |       ├── TIM_Events.hpp
+|   |       ├── TIM_EventScheduler.hpp
+|   |       ├── Timeout.hpp
 |   |       └── Timer.hpp
 |   |
 |   ├── targets/
 |   |   ├── stm32f303k8/
-|   |   |   ├── PinMap.hpp
-|   |   |   ├── TIM_core.hpp
-|   |   |   └── UART_core.hpp
+|   |   |   └── PinMap.hpp
 |   |   |
 |   |   └── stm32f446re/
-|   |       ├── PinMap.hpp
-|   |       ├── TIM_core.hpp
-|   |       └── UART_core.hpp
+|   |       └── PinMap.hpp
 |   |    
 |   └── RoboconLibrary.h
 |
 ├── src/
 |   ├── driver/
+|   |   ├── Analog/
+|   |   |   ├── AnalogIn.cpp
+|   |   |   └── AnalogOut.cpp
+|   |   |
 |   |   ├── digital/
 |   |   |   ├── DigitalIn.cpp
 |   |   |   └── DigitalOut.cpp
@@ -145,18 +160,28 @@ RoboconLibrary/
 |   |   |
 |   |   └── timer/
 |   |       ├── Clock.cpp
+|   |       ├── Ticker.hpp
+|   |       ├── TIM_Events.cpp
+|   |       ├── TIM_EventScheduler.cpp
+|   |       ├── Timeout.cpp
 |   |       └── Timer.cpp
 |   |
 |   └── targets/
 |       ├── stm32f303k8/
+|       |   ├── ADC_DAC_Init.cpp
 |       |   ├── PinMap.cpp
-|       |   ├── TIM_core.cpp
-|       |   └── UART_core.cpp
+|       |   ├── System.cpp
+|       |   ├── TIM_Init.cpp
+|       |   ├── TIM_Manager.cpp
+|       |   └── UART_Manager.cpp
 |       |
 |       └── stm32f446re/
+|           ├── ADC_DAC_Init.cpp
 |           ├── PinMap.cpp
-|           ├── TIM_core.cpp
-|           └── UART_core.cpp
+|           ├── System.cpp
+|           ├── TIM_Init.cpp
+|           ├── TIM_Manager.cpp
+|           └── UART_Manager.cpp
 |
 ├── .gitignore
 |
@@ -171,6 +196,31 @@ RoboconLibrary/
 ---
 
 ## Available Modules（利用可能なモジュール）
+
+### AnalogOut
+Control analog output pins.
+
+Typical use cases（利用例）:
+- Conrtol circuit voltage　（回路の電圧制御）
+
+Methods（メソッド）:
+- set_buffer_extence(mode) Set DAC buffer extence (true or false)（使用するDACのバッファの有無を書き換える）
+- write(value) : Set output level (0.0 ~ 1.0)（出力値を設定）
+- write_u16(value) : Set output level (0 ~ 65535)
+
+---
+
+### AnalogIn
+Control analog input pins.
+
+Typical use cases（利用例）:
+- Distance sensor voltage detection（距離センサの電圧検知）
+
+Methods（メソッド）:
+- read() : Get current input state（入力値の取得：0.0 ~ 1.0）
+- read_u16() : Get current input state （入力値の取得：0 ~ 65535）
+
+---
 
 ### DigitalOut
 Control digital output pins.
@@ -215,6 +265,40 @@ Methods（メソッド）:
 - read_ms() : Get elapsed time in milliseconds（経過時間を取得：単位[ms]）
 - read_us() : Get elapsed time in microseconds（経過時間を取得：単位[us]）
 - isRunning() : Check if timer is running（計測状態を取得）
+
+---
+
+### Ticker
+Call a function periodically using a hardware timer.
+（ハードウェアタイマーを用いて一定周期で関数を実行）
+
+Typical use cases（利用例）:
+- Periodic control loop（周期制御）
+- Sensor polling（センサの定期読み取り）
+- LED blinking（LED点滅）
+
+Methods（メソッド）:
+- attach_ms(callback, ms) : Execute callback periodically in millisecond（周期的にコールバックを実行：単位[ms]）
+- attach_us(callback, us) : Execute callback periodically in microsecond（周期的にコールバックを実行：単位[us]）
+- active() : Restart periodic execution
+- detach() : Stop periodic execution
+
+---
+
+### Timeout
+Execute a function once after a specified delay.
+（指定時間後に一度だけ関数を実行）
+
+Typical use cases（利用例）:
+- Delayed execution（遅延実行）
+- Non-blocking wait（ノンブロッキング待機）
+- One-shot event（ワンショットイベント）
+
+Methods（メソッド）:
+- attach_ms(callback, ms) : Execute callback once after delay（指定時間後にコールバックを実行：単位[ms]）
+- attach_us(callback, us) : Execute callback once after delay（指定時間後にコールバックを実行：単位[us]）
+- active() : Restart timeout（コールバック関数の再設定）
+- detach() : Cancel scheduled callback（登録したコールバックの解除）
 
 ---
 
