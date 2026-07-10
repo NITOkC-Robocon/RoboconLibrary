@@ -108,8 +108,8 @@ void PwmOut::pulsewidth_ticks(uint32_t ticks){
     __HAL_TIM_SET_COMPARE(&htim, channel, ticks);
 }
 
-void PwmOut::pulsewidth(float sec){
-    pulsewidth_us(sec * 1000000);
+void PwmOut::pulsewidth_ms(float ms){
+    pulsewidth_us(ms * 1000);
 }
 
 void PwmOut::pulsewidth_us(uint32_t us){
