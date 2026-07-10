@@ -81,6 +81,20 @@ struct UARTInfo {
     UART_MODE uart_mode; 
 };
 
+//----- I2C 情報 -----
+constexpr uint8_t MAX_I2C_PER_PIN = 1;
+enum I2C_MODE {
+    I2C_SDA,
+    I2C_SCL,
+    I2C_NONE
+};
+
+struct I2CInfo {
+    I2C_TypeDef* i2c;
+    uint32_t af;
+    I2C_MODE mode;   // SDA / SCL
+};
+
 //----- ピン情報まとめ -----
 struct PinInfo {
     const char* name;
@@ -96,6 +110,9 @@ struct PinInfo {
 
     //--- UART ---
     UARTInfo uart_info[MAX_UART_PER_PIN];
+
+    //--- I2C ---
+    I2CInfo i2c_info[MAX_I2C_PER_PIN];  // SDA, SCL
 };
 
 
