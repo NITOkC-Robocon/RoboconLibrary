@@ -102,6 +102,11 @@ public:
      * @param duty デューティ比(0.0~1.0)
      */
     void write(float duty);
+
+    PwmOut& operator = (float duty){
+        write(duty);
+        return *this;
+    }
 };
 
 /**
