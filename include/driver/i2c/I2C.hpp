@@ -5,6 +5,13 @@
 #define I2C_BUFFER_SIZE 128
 
 
+enum class I2C_freq : uint32_t
+{
+    Standard = 100000,   // 100 kHz
+    Fast = 400000,       // 400 kHz
+    FastPuls = 1000000,   // 1 MHz
+};
+
 /**
  * @brief I2C通信用クラス
  * 
@@ -84,7 +91,7 @@ public:
      * 
      * @param hz 設定する周波数(Hz)
      */
-    void frequency(uint32_t hz);
+    void frequency(I2C_freq mode);
 
     I2C_HandleTypeDef hi2c;
 };

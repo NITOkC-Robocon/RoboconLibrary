@@ -2,6 +2,8 @@
 #include "core/System.hpp"
 #include "core/I2C_Init.hpp"
 
+
+
 I2C::I2C(PinName sda, PinName scl)
 {
     sdaInfo = PinMap[sda];
@@ -97,11 +99,11 @@ int I2C::read(int address, char* data, int length, bool repeated)
     return -1;
 }
 
-void I2C::frequency(uint32_t hz)
+void I2C::frequency(I2C_freq mode)
 {
     class_initialized();
 
-    frequency_hz = hz;
+    frequency_hz = static_cast<uint32_t>(mode);
     if (initialized)
         init_i2c();
 }
