@@ -85,6 +85,13 @@ void SystemClock_Config(void)
         Error_Handler();
     }
 
+    RCC_PeriphCLKInitTypeDef PeriphClkInit = {};
+
+    PeriphClkInit.PeriphClockSelection = RCC_PERIPHCLK_I2C1;
+    PeriphClkInit.I2c1ClockSelection = RCC_I2C1CLKSOURCE_SYSCLK;
+
+    HAL_RCCEx_PeriphCLKConfig(&PeriphClkInit);    
+
     SystemCoreClockUpdate();
 
 #ifndef USE_FREERTOS
