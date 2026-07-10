@@ -1,6 +1,6 @@
 # RoboconLibrary
 
-A lightweight STM32Cube-based mbed-like library for PlatformIO.
+A lightweight STM32Cube HAL-based mbed-like library for PlatformIO.
 （PlatfomIO向け、STM32Cubeベースのmbed風ライブラリ。）
 
 RoboconLibrary is designed for long-term embedded development after Mbed OS end-of-life, providing a familiar mbed-style API while using STM32Cube HAL as backend.
@@ -16,6 +16,27 @@ RoboconLibrary is designed for long-term embedded development after Mbed OS end-
 - Lightweight and simple abstraction
 - Designed for Robocon development
 - Multi-target STM32 support
+
+---
+
+## API Compatibility
+
+RoboconLibrary follows the mbed API whenever practical.
+
+| mbed | RoboconLibrary |
+|------|----------------|
+| DigitalOut | ✔ |
+| DigitalIn | ✔ |
+| AnalogIn | ✔ |
+| AnalogOut | ✔ |
+| Timer | ✔ |
+| Ticker | ✔ |
+| Timeout | ✔ |
+| PwmOut | ✔ |
+| RawSerial | ✔ |
+| InterruptIn | ✔ |
+| RotaryEncoder | ✔(Extended) |
+| I2C | ✔ |
 
 ---
 
@@ -110,6 +131,9 @@ RoboconLibrary/
 |   |   ├── encoder/
 |   |   |   └── RotaryEncoder.hpp
 |   |   |
+|   |   ├── I2C/
+|   |   |   └── I2C.hpp
+|   |   |
 |   |   ├── interrupt/
 |   |   |   └── InterruptIn.hpp
 |   |   |
@@ -149,6 +173,9 @@ RoboconLibrary/
 |   |   ├── encoder/
 |   |   |   └── RotaryEncoder.cpp
 |   |   |
+|   |   ├── I2C/
+|   |   |   └── I2C.cpp
+|   |   |
 |   |   ├── interrupt/
 |   |   |   └── InterruptIn.cpp
 |   |   |
@@ -169,6 +196,7 @@ RoboconLibrary/
 |   └── targets/
 |       ├── stm32f303k8/
 |       |   ├── ADC_DAC_Init.cpp
+|       |   ├── I2C_Init.cpp
 |       |   ├── PinMap.cpp
 |       |   ├── System.cpp
 |       |   ├── TIM_Init.cpp
@@ -177,6 +205,7 @@ RoboconLibrary/
 |       |
 |       └── stm32f446re/
 |           ├── ADC_DAC_Init.cpp
+|           ├── I2C_Init.cpp
 |           ├── PinMap.cpp
 |           ├── System.cpp
 |           ├── TIM_Init.cpp
@@ -196,6 +225,7 @@ RoboconLibrary/
 ---
 
 ## Available Modules（利用可能なモジュール）
+
 
 ### AnalogOut
 Control analog output pins.
@@ -331,6 +361,28 @@ Methods（メソッド）:
 - period_us(us) : Set servo PWM period in microseconds（PWM周期の設定：単位[us]）
 - setPulseRange(min, max) : Define pulse width range for angle mapping（パルス幅の限界値を設定：単位[us]）
 - pulsewidth_us(us) : Directly set servo pulse width in microseconds（パルス幅を設定：単位[us]）
+
+---
+
+### I2C
+Master-mode I2C communication interface.
+（I2Cマスター通信インターフェース。）
+
+Typical use cases（利用例）:
+- IMU communication（IMUとの通信）
+- EEPROM access（EEPROMとの通信）
+- I2C sensor interface（I2Cセンサとの通信）
+- Display control（OLEDやLCDの制御）
+
+Methods（メソッド）:
+- frequency(mode) : Set I2C bus speed (Standard / Fast / FastPlus)
+  （I2C通信速度を設定）
+- write(address, data, length, repeated = false)
+  : Transmit data to a slave device
+  （スレーブデバイスへデータを送信）
+- read(address, data, length, repeated = false)
+  : Receive data from a slave device
+  （スレーブデバイスからデータを受信）
 
 ---
 
