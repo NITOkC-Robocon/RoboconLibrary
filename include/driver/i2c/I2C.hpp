@@ -87,9 +87,12 @@ public:
      * 
      * <使用例>
      * 
-     * i2c.frequency(400000); // 400kHzに設定
+     * i2c.frequency(I2C_freq::Fast); // 400kHzに設定
      * 
-     * @param hz 設定する周波数(Hz)
+     * @param mode 設定する周波数(Standart/Fast/FastPuls)
+     * @param Standart 100kHz
+     * @param Fast 400kHz
+     * @param FastPuls 1MHz
      */
     void frequency(I2C_freq mode);
 
