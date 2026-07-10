@@ -17,6 +17,9 @@
 //Serial
 #include "driver/serial/Serial.hpp"
 
+//I2C
+#include "driver/i2c/I2C.hpp"
+
 //Timer
 #include "driver/timer/Timer.hpp"
 
