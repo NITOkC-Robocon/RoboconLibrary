@@ -17,11 +17,13 @@ uint32_t getI2CClockFreq(I2C_TypeDef* i2c)
     uint32_t i2c_clock;
     uint32_t cfgr3 = RCC->CFGR3;
 
-    if (cfgr3 & RCC_CFGR3_I2C1SW)
+    if (cfgr3 & RCC_CFGR3_I2C1SW) {
         i2c_clock = HAL_RCC_GetSysClockFreq();
-    else
+    } else {
         i2c_clock = HSI_VALUE;    // 通常8000000
-        return i2c_clock;
+    }
+
+    return i2c_clock;
 }
 
 void I2C_SetTiming(I2C_HandleTypeDef* Instance, uint32_t frequency_hz)
