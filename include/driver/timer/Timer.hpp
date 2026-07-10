@@ -35,7 +35,7 @@ public:
  * 
  * 短時間用途専用（PID制御など）
  * 
- * 約71分でオーバーフローする（uint32_t制限）
+ * @note 約71分でオーバーフローする（uint32_t制限）
  * @return 経過時間 [us]
  */
     uint32_t read_us() const;
