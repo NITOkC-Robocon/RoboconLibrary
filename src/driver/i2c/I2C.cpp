@@ -75,7 +75,7 @@ int I2C::write(int address, const char* data, int length, bool repeated)
 
     if (HAL_I2C_Master_Transmit(
             &hi2c,
-            address << 1,
+            address,
             (uint8_t*)data,
             length,
             100) == HAL_OK)
@@ -90,7 +90,7 @@ int I2C::read(int address, char* data, int length, bool repeated)
 
     if (HAL_I2C_Master_Receive(
             &hi2c,
-            address << 1,
+            address,
             (uint8_t*)data,
             length,
             100) == HAL_OK)
