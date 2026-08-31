@@ -6,8 +6,8 @@ class TIM_Event {
 public:
     virtual void fire() = 0;
 
-    uint32_t next = 0;
-    bool isactive = false;
+    volatile uint32_t next = 0;
+    volatile bool isactive = false;
 
     virtual ~TIM_Event() = default;
 

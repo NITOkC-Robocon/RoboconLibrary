@@ -36,8 +36,11 @@ void Ticker::fire()
 {
     if(callback) callback();
 
-    do {
+    if(period == 0) {
+        return;
+    }
+
+    while((int32_t)(TIM_Clock::get_counter() - next) >= 0) {
         next += period;
     }
-    while((int32_t)(TIM_Clock::get_counter() - next) >= 0);
 }
