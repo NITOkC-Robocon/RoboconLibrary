@@ -44,20 +44,37 @@ bool isAPB2TIM(TIM_TypeDef* tim)
 
 uint32_t getTimerClock(TIM_TypeDef* tim)
 {
-    uint32_t pclk;
-    uint32_t ppre;
+    RCC_ClkInitTypeDef clkconfig{};
+    uint32_t flashLatency;
 
-    if(isAPB2TIM(tim)){
-        pclk = HAL_RCC_GetPCLK2Freq();
-        ppre = (RCC->CFGR & RCC_CFGR_PPRE2) >> 13;
+    HAL_RCC_GetClockConfig(&clkconfig, &flashLatency);
+
+    if(isAPB2TIM(tim))
+    {
+        uint32_t pclk = HAL_RCC_GetPCLK2Freq();
+
+        if(clkconfig.APB2CLKDivider == RCC_HCLK_DIV1)
+        {
+            return pclk;
+        }
+        else
+        {
+            return pclk * 2;
+        }
     }
     else
     {
-        pclk = HAL_RCC_GetPCLK1Freq();
-        ppre = (RCC->CFGR & RCC_CFGR_PPRE1) >> 10;
-    }
+        uint32_t pclk = HAL_RCC_GetPCLK1Freq();
 
-    return (ppre < 4) ? pclk : pclk * 2;
+        if(clkconfig.APB1CLKDivider == RCC_HCLK_DIV1)
+        {
+            return pclk;
+        }
+        else
+        {
+            return pclk * 2;
+        }
+    }
 }
 
 uint32_t getTIMMaxCount(TIM_TypeDef* tim)
