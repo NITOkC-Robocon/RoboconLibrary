@@ -2,12 +2,12 @@
 
 RawSerial pc(USBTX, USBRX);
 
-AnalogIn In(PA_1);
-AnalogOut Out(PA_4);
+AnalogIn In(PA_1);  //アナログ入力用ピン
+AnalogOut Out(PA_4);    //アナログ出力用ピン
 
-DigitalOut led(LED);
+DigitalOut led(LED);    //入出力確認用LED
 
-Ticker switcher;
+Ticker switcher;    //出力切り替えトリガー用
 
 void switch_Out(){
     static bool state = false;
@@ -23,7 +23,7 @@ void switch_Out(){
 
 int main()
 {
-    switcher.attach_ms(switch_Out, 1000);
+    switcher.attach_ms(switch_Out, 1000);   //一秒ごとに出力を切り替えるためのTicker
     
     while(1)
     {
