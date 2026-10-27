@@ -79,83 +79,6 @@ int main(void) {
     }
 }
 
-
-// 初期設定（割り込み、PWM、待機処理）
-void Config(void) {
-    Set_OutPut_Printf(&pc);
-    // PS3コントローラ用シリアル割り込みを設定
-    cont.attach(&PS3Data, RawSerial::RxIrq);
-
-    // 各モータのPWM周期を設定
-    for (int i = 0; i < 4; i++) {
-        P[i].period_us(1500); // PWM周期 1500us
-    }
-
-    // 目標値と現在値をリセット
-    for (int i = 0; i < 4; i++) {
-        target_motor[i] = 0;
-        current_motor[i] = 0;
-        P[i].write(0); // PWM出力を0に
-        Dig[i] = 0;    // モータ停止
-    }
-
-    // PS3データ初期化
-    for (int i = 0; i < 8; i++) {
-        PS3[i] = 0;
-    }
-
-    // Startボタンが押されるまで待機
-    while (PS3[2] != 0x03) {
-        for (int i = 0; i < 8; i++) {
-            pc.printf("%d, ", PS3[i]);
-        }
-        pc.printf("\r\n");
-    }
-}
-
-
-// PS3データの受け取り
-void PS3Data(void){
-    //受信割り込みのときに来る
-    const int PS3_default[8] = {0x80, 0x00, 0x00, 0x40, 0x40, 0x40, 0x40, 0x00};
-    int SBDBT_Data = cont.getc();
-    static int bits = 0;
-    static int check_sum = 0x00;
-    static int error_count = 0;
-    
-    if(SBDBT_Data == 128){
-        bits = 0;
-        check_sum = 0x00; //check_sum初期化
-    }
-
-    if (SBDBT_Data >= 0){
-        ps3_pool[bits] = SBDBT_Data; //仮収納配列に一旦値を突っ込む
-        
-        if (bits == 7){
-            if((check_sum % 0x80) == ps3_pool[7]){ //7バイト目までの合計の下位7bit（合計値を0x80で割った余りで計算できる）がPS3の8バイト目（チェックサム）と同値か判定
-                error_count = 0;
-                for(int i = 0; i < 8;i++){
-                    PS3[i] = ps3_pool[i]; //チェックサムが正しい（データに間違いが無い）場合、仮配列から本配列にデータを移行
-                }
-            }
-            else{
-                error_count++;
-                if(error_count >= 5){
-                    for(int i = 0; i < 8;i++){
-                        PS3[i] = PS3_default[i]; //チェックサムが正しい（データに間違いが無い）場合、仮配列から本配列にデータを移行
-                    }
-                }
-                bits = 0; //念の為初期化（いずれにせよ1バイト目の0x80で初期化されるため、実は必要ない）
-            }
-        }
-        else {
-            check_sum += SBDBT_Data; //8バイト目を受け取るまでは、チェックサム変数に加算し続けて合計を取る
-            bits++;
-        }
-    }
-}
-
-
 // モータを動かすメイン関数
 void Move(void) {
     int i;
@@ -254,3 +177,81 @@ void Move(void) {
     //pc.printf("Current Motors: %.2f %.2f %.2f %.2f\n", current_motor[0], current_motor[1], current_motor[2], current_motor[3]);
     
 }
+
+
+// 初期設定（割り込み、PWM、待機処理）
+void Config(void) {
+    Set_OutPut_Printf(&pc);
+    // PS3コントローラ用シリアル割り込みを設定
+    cont.attach(&PS3Data, RawSerial::RxIrq);
+
+    // 各モータのPWM周期を設定
+    for (int i = 0; i < 4; i++) {
+        P[i].period_us(1500); // PWM周期 1500us
+    }
+
+    // 目標値と現在値をリセット
+    for (int i = 0; i < 4; i++) {
+        target_motor[i] = 0;
+        current_motor[i] = 0;
+        P[i].write(0); // PWM出力を0に
+        Dig[i] = 0;    // モータ停止
+    }
+
+    // PS3データ初期化
+    for (int i = 0; i < 8; i++) {
+        PS3[i] = 0;
+    }
+
+    // Startボタンが押されるまで待機
+    while (PS3[2] != 0x03) {
+        for (int i = 0; i < 8; i++) {
+            pc.printf("%d, ", PS3[i]);
+        }
+        pc.printf("\r\n");
+    }
+}
+
+
+// PS3データの受け取り
+void PS3Data(void){
+    //受信割り込みのときに来る
+    const int PS3_default[8] = {0x80, 0x00, 0x00, 0x40, 0x40, 0x40, 0x40, 0x00};
+    int SBDBT_Data = cont.getc();
+    static int bits = 0;
+    static int check_sum = 0x00;
+    static int error_count = 0;
+    
+    if(SBDBT_Data == 128){
+        bits = 0;
+        check_sum = 0x00; //check_sum初期化
+    }
+
+    if (SBDBT_Data >= 0){
+        ps3_pool[bits] = SBDBT_Data; //仮収納配列に一旦値を突っ込む
+        
+        if (bits == 7){
+            if((check_sum % 0x80) == ps3_pool[7]){ //7バイト目までの合計の下位7bit（合計値を0x80で割った余りで計算できる）がPS3の8バイト目（チェックサム）と同値か判定
+                error_count = 0;
+                for(int i = 0; i < 8;i++){
+                    PS3[i] = ps3_pool[i]; //チェックサムが正しい（データに間違いが無い）場合、仮配列から本配列にデータを移行
+                }
+            }
+            else{
+                error_count++;
+                if(error_count >= 5){
+                    for(int i = 0; i < 8;i++){
+                        PS3[i] = PS3_default[i]; //チェックサムが正しい（データに間違いが無い）場合、仮配列から本配列にデータを移行
+                    }
+                }
+                bits = 0; //念の為初期化（いずれにせよ1バイト目の0x80で初期化されるため、実は必要ない）
+            }
+        }
+        else {
+            check_sum += SBDBT_Data; //8バイト目を受け取るまでは、チェックサム変数に加算し続けて合計を取る
+            bits++;
+        }
+    }
+}
+
+
